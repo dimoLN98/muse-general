@@ -1,0 +1,14 @@
+{
+  "auto_confirm": true,
+  "campaign": "v075-shortcut-v3",
+  "model": "flash",
+  "ratio": "9:16",
+  "duration": 4,
+  "quantity": 1,
+  "output_folder": "/home/you/Documents/Acme/05_Ops/cards/file-review-V075-e62ef5c9d3e66181/work/clips",
+  "reference_images": [
+    "/home/you/Documents/Acme/05_Ops/cards/file-review-V075-e62ef5c9d3e66181/work/refs/flow_cf8bcdbe_2.jpg",
+    "/tmp/c1/f04.png"
+  ],
+  "prompt": "Medium close-up on MAYA at the desk, 50mm lens, locked off with a slow drift, in a single unbroken scene, warm desk lamp from the right and cold blue window light from the left. MAYA, 22, South Asian, dark curly hair in a messy bun, oversized heather-grey crewneck sweatshirt, sits over the open chemistry textbook with a pen in her hand, tired and stubborn. She looks up from the page and says: There's no other way up. From off-screen to her left, NOAH, 23, Black, short fade, black denim jacket over a white T-shirt, answers calmly: There is. A catalyst doesn't climb. Maya frowns, thinking about it, her eyes moving as the idea lands. Natural, lively voices, close and intimate, no music. Audio: quiet room tone, faint traffic outside. Keep her face, wardrobe, room and lighting identical to the reference. A clean frame with no subtitles, captions or on-screen text. Leave clear space above her head."
+}

@@ -1,0 +1,102 @@
+{
+  "accountRotation": {
+    "accounts": [
+      {
+        "email": "you@example.com",
+        "index": 1,
+        "userDataDir": "/home/you/.config/browser-profiles/google-flow"
+      }
+    ],
+    "enabled": true,
+    "recheckAllExhaustedMs": 900000
+  },
+  "actionDelayMs": 800,
+  "agentResponseTimeoutMs": 8000,
+  "cloudBrowserWindow": "browser-task:00000000-0000-0000-0000-000000000000",
+  "cloudProjectUrl": "https://flow.google.com/project/00000000-0000-0000-0000-000000000000",
+  "discoveredPages": [
+    "home",
+    "project",
+    "characters",
+    "character-new",
+    "scenes",
+    "scene",
+    "tools",
+    "tool",
+    "create-tool",
+    "trash",
+    "media"
+  ],
+  "downloadWaitMs": 30000,
+  "driver": "cloud",
+  "durations": [
+    "4s",
+    "6s",
+    "8s",
+    "10s"
+  ],
+  "expectedAccount": "you@example.com",
+  "expensiveVideoModels": [
+    "Veo 3.1 - Quality"
+  ],
+  "flowHome": ".",
+  "flowUrl": "https://flow.google.com/?pli=1",
+  "generationPollIntervalMs": 5000,
+  "generationTimeoutMs": 180000,
+  "imageDefaultModel": "Nano Banana 2.1",
+  "imageModelAliases": {
+    "NB Pro": "Nano Banana Pro",
+    "NB2": "Nano Banana 2.1",
+    "Nano Banana": "Nano Banana 2.1",
+    "Nano Banana 2": "Nano Banana 2.1"
+  },
+  "imageModels": {
+    "Nano Banana 2 Lite": "nano-banana-2-lite",
+    "Nano Banana 2.1": "nano-banana-2.1",
+    "Nano Banana Pro": "nano-banana-pro"
+  },
+  "jobTimeoutMs": 300000,
+  "locale": "en",
+  "maxPollAttempts": 120,
+  "quantities": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "ratios": [
+    "16:9",
+    "4:3",
+    "1:1",
+    "3:4",
+    "9:16"
+  ],
+  "videoDefaultModel": "Omni 1.1 Flash",
+  "videoDurationRule": "Omni 1.2 Flash: 3-15s in 1s steps. Omni 1.1 Flash: 4/6/8/10s (retires 2026-12-05). Veo 3.1 Lite/Fast: 4/6/8s. Veo 3.1 Quality: 8s.",
+  "videoGenerationTimeoutMs": 900000,
+  "videoModelAliases": {
+    "Gemini Omni Flash": "Omni 1.2 Flash",
+    "Gemini Omni Flash 1.1": "Omni 1.1 Flash",
+    "Gemini Omni Flash 1.2": "Omni 1.2 Flash",
+    "Omni": "Omni 1.2 Flash",
+    "Omni 1.1": "Omni 1.1 Flash",
+    "Omni 1.1 Flash Leaving Dec 5": "Omni 1.1 Flash",
+    "Omni Flash": "Omni 1.2 Flash",
+    "Omni Legacy": "Omni 1.1 Flash",
+    "Veo 3.1 - Fast Leaving Dec 5": "Veo 3.1 - Fast",
+    "Veo 3.1 - Quality Leaving Dec 5": "Veo 3.1 - Quality",
+    "Veo Fast": "Veo 3.1 - Fast",
+    "Veo Lite": "Veo 3.1 - Lite"
+  },
+  "videoModels": {
+    "Omni 1.1 Flash": "omni-1.1-flash",
+    "Omni 1.2 Flash": "omni-1.2-flash",
+    "Veo 3.1 - Fast": "veo-3.1-fast",
+    "Veo 3.1 - Lite": "veo-3.1-lite",
+    "Veo 3.1 - Quality": "veo-3.1-quality"
+  },
+  "videoRatios": [
+    "16:9",
+    "9:16"
+  ]
+}

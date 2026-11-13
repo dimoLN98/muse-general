@@ -1,0 +1,15 @@
+node_modules/
+logs/
+screenshots-debug/
+outputs/
+chrome-profile-kiara/
+screenshot*.png
+config/flow.config.json
+config/flow.projects.json
+.env
+.DS_Store
+*.log
+test-agent-generation.js
+installation-smoke-report.json
+# account-rotation state (balances, timestamps; no secrets) is per-host runtime data
+state/

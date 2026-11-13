@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.9.0",
+    "playwright": "^1.51.0",
+    "zod": "^3.24.0"
+  },
+  "description": "Cloud-browser edition of the Google Flow MCP server: no local Chrome, no CDP. Browser work runs in the already-signed-in cloud browser via a disk task queue; the agent executes each queued assignment in the cloud browser and reports back with flow_cloud_complete.",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "src/index.js",
+  "name": "google-flow-browser-mcp-cloud",
+  "scripts": {
+    "start": "node start-stdio.mjs",
+    "test": "node scripts/cloud-smoke-test.mjs",
+    "test:smoke": "node scripts/cloud-smoke-test.mjs"
+  },
+  "type": "module",
+  "version": "1.3.0-cloud.1"
+}

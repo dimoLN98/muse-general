@@ -1,0 +1,14 @@
+{
+  "auto_confirm": true,
+  "campaign": "v075-shortcut-v3",
+  "model": "flash",
+  "ratio": "9:16",
+  "duration": 6,
+  "quantity": 1,
+  "output_folder": "/home/you/Documents/Acme/05_Ops/cards/file-review-V075-e62ef5c9d3e66181/work/clips",
+  "reference_images": [
+    "/home/you/Documents/Acme/05_Ops/cards/file-review-V075-e62ef5c9d3e66181/work/refs/flow_cf8bcdbe_2.jpg",
+    "/tmp/c1/f01.png"
+  ],
+  "prompt": "Medium two-shot at desk height in the same crowded student room at 2 a.m., 35mm lens, very slow 5 percent push-in, in a single unbroken scene, warm desk lamp from the right and cold blue window light from the left. NOAH, 23, Black, short fade, small hoop earring, black denim jacket over a plain white T-shirt, leans over the desk toward MAYA and draws a line through the air with one finger, saying: It digs through. MAYA, 22, South Asian, dark curly hair in a messy bun, oversized heather-grey crewneck sweatshirt, looks at him, her face lighting up as she gets it, and says: Same reaction. Lower hill. Noah grins and says: Take the shortcut. Natural, lively voices, warm and intimate, no music. Audio: quiet room tone, a pen tapping once, faint traffic. Keep both faces, wardrobe, room and lighting identical to the reference. A clean frame with no subtitles, captions or on-screen text. Leave clear space above their heads and keep both faces inside frame for the whole shot."
+}

@@ -1,0 +1,1562 @@
+{
+  "_description": "UI selectors map for Google Flow (flow.google.com). Per-page sections are rewritten by flow_discover_ui; the \"stable\" section is curated.",
+  "_lastUpdated": "2026-11-12T05:39:47.635Z",
+  "characters": {
+    "urlPattern": "/project/<id>/character",
+    "title": "Google Flow - MCP remap sandbox",
+    "discoveredAt": "2026-10-16T23:28:17.955Z",
+    "selectors": {
+      "buttons": [
+        {
+          "text": "Agree",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "No thanks",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "Google Account: Your Name  \n(first@example.com), Google membership",
+          "visible": true,
+          "tag": "A",
+          "ariaLabel": "Google Account: Your Name  \n(first@example.com), Google membership",
+          "dataTestId": null
+        },
+        {
+          "text": "arrow_back",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Go back",
+          "dataTestId": null
+        },
+        {
+          "text": "The EccentricUnforgettable quirky humans. Magnetic scene-stealers with offbeat c",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "The ProfessionalClean cut, well spoken, competent",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "The WildcardBeyond human, anything can be a character, right?",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "The FamiliarGrounded and authentic, a relatable anchor for your story",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "The WickedPowerful antagonistic figures that command the screen",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "The FantasticalEthereal, dreamlike beings fusing the human and the mythical",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "add",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Add ingredients to the prompt box",
+          "dataTestId": null
+        },
+        {
+          "text": "personal_recommendationsFormat",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Format",
+          "dataTestId": null
+        },
+        {
+          "text": "Settings trigger",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": "Settings trigger",
+          "dataTestId": null
+        },
+        {
+          "text": "🍌 Nano Banana 2.1 arrow_drop_down",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Select model family",
+          "dataTestId": null
+        },
+        {
+          "text": "arrow_forward",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Start generation",
+          "dataTestId": null
+        },
+        {
+          "text": "uploadUpload",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "addAdd from project",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        }
+      ],
+      "inputs": [
+        {
+          "placeholder": "",
+          "ariaLabel": "Describe your character…",
+          "name": "",
+          "type": "DIV",
+          "visible": true
+        },
+        {
+          "placeholder": "",
+          "ariaLabel": "",
+          "name": "g-recaptcha-response",
+          "type": "TEXTAREA",
+          "visible": false
+        }
+      ],
+      "links": [
+        {
+          "text": "Learn more",
+          "href": "https://policies.google.com/technologies/cookies?hl=en",
+          "visible": false
+        },
+        {
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "visible": false
+        }
+      ],
+      "headings": [],
+      "modelTexts": [
+        "🍌 Nano Banana 2.1"
+      ],
+      "ratioTexts": []
+    }
+  },
+  "scenes": {
+    "urlPattern": "/project/<id>",
+    "title": "Google Flow - MCP remap sandbox",
+    "discoveredAt": "2026-10-16T23:28:23.997Z",
+    "selectors": {
+      "buttons": [
+        {
+          "text": "Agree",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "No thanks",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "home",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Home",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options for the project",
+          "dataTestId": null
+        },
+        {
+          "text": "search",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Search",
+          "dataTestId": null
+        },
+        {
+          "text": "filter_list",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Filtering and sorting options",
+          "dataTestId": null
+        },
+        {
+          "text": "add",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Add media menu",
+          "dataTestId": null
+        },
+        {
+          "text": "help",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Product help",
+          "dataTestId": null
+        },
+        {
+          "text": "settings_2",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Settings",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "PRO",
+          "visible": true,
+          "tag": "DIV",
+          "ariaLabel": "Account details",
+          "dataTestId": null
+        },
+        {
+          "text": "Google Account: Your Name  \n(first@example.com), Google membership",
+          "visible": true,
+          "tag": "A",
+          "ariaLabel": "Google Account: Your Name  \n(first@example.com), Google membership",
+          "dataTestId": null
+        },
+        {
+          "text": "dashboard All media",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "image Images",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "accessibility_new Characters",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "movie Scenes",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "drive_folder_upload Uploads",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "left_panel_closeCollapse",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "favorite",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Favorite",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "favorite",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Favorite",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "favorite",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Favorite",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "menu",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Open session history",
+          "dataTestId": null
+        },
+        {
+          "text": "edit_square",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Start new session",
+          "dataTestId": null
+        },
+        {
+          "text": "close",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Close",
+          "dataTestId": null
+        },
+        {
+          "text": "Image ingredient",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Image ingredient",
+          "dataTestId": null
+        },
+        {
+          "text": "Open image in editor",
+          "visible": true,
+          "tag": "DIV",
+          "ariaLabel": "Open image in editor",
+          "dataTestId": null
+        },
+        {
+          "text": "thumb_up",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Good response",
+          "dataTestId": null
+        },
+        {
+          "text": "thumb_down",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Bad response",
+          "dataTestId": null
+        },
+        {
+          "text": "content_copy",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Copy",
+          "dataTestId": null
+        },
+        {
+          "text": "flag",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Flag output",
+          "dataTestId": null
+        },
+        {
+          "text": "add",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Add ingredients to the prompt box",
+          "dataTestId": null
+        },
+        {
+          "text": "Settings trigger",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": "Settings trigger",
+          "dataTestId": null
+        },
+        {
+          "text": "article_spark",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Agent instructions",
+          "dataTestId": null
+        },
+        {
+          "text": "tune",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Settings",
+          "dataTestId": null
+        },
+        {
+          "text": "arrow_forward",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Start generation",
+          "dataTestId": null
+        }
+      ],
+      "inputs": [
+        {
+          "placeholder": "",
+          "ariaLabel": "Editable text",
+          "name": "",
+          "type": "text",
+          "visible": true
+        },
+        {
+          "placeholder": "",
+          "ariaLabel": "Search",
+          "name": "",
+          "type": "text",
+          "visible": true
+        },
+        {
+          "placeholder": "",
+          "ariaLabel": "What do you want to create?",
+          "name": "",
+          "type": "DIV",
+          "visible": true
+        },
+        {
+          "placeholder": "",
+          "ariaLabel": "",
+          "name": "g-recaptcha-response",
+          "type": "TEXTAREA",
+          "visible": false
+        }
+      ],
+      "links": [
+        {
+          "text": "Learn more",
+          "href": "https://policies.google.com/technologies/cookies?hl=en",
+          "visible": false
+        },
+        {
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "visible": false
+        },
+        {
+          "text": "apps_spark_2Tools",
+          "href": "/project/<id>/tools",
+          "visible": true
+        },
+        {
+          "text": "addCreate tool",
+          "href": "/project/<id>/create-tool",
+          "visible": true
+        },
+        {
+          "text": "deleteTrash",
+          "href": "/project/<id>/trash",
+          "visible": true
+        }
+      ],
+      "headings": [
+        {
+          "level": "H2",
+          "text": "Moody Sliced Apple Still Life"
+        }
+      ],
+      "modelTexts": [],
+      "ratioTexts": []
+    }
+  },
+  "toolsGallery": {
+    "urlPattern": "/project/<id>/tools",
+    "title": "Google Flow - AI Creative Studio for Video, Images & Custom Tools: Tools",
+    "discoveredAt": "2026-10-16T23:28:28.576Z",
+    "selectors": {
+      "buttons": [
+        {
+          "text": "Agree",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "No thanks",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "Google Account: Your Name  \n(first@example.com), Google membership",
+          "visible": true,
+          "tag": "A",
+          "ariaLabel": "Google Account: Your Name  \n(first@example.com), Google membership",
+          "dataTestId": null
+        },
+        {
+          "text": "arrow_back",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Back button to go to previous page",
+          "dataTestId": null
+        },
+        {
+          "text": "My Tools",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "Community",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "Templates",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "dashboard All media",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "image Images",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "accessibility_new Characters",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "movie Scenes",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "drive_folder_upload Uploads",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "left_panel_closeCollapse",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "Create tool",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        }
+      ],
+      "inputs": [
+        {
+          "placeholder": "",
+          "ariaLabel": "",
+          "name": "g-recaptcha-response",
+          "type": "TEXTAREA",
+          "visible": false
+        }
+      ],
+      "links": [
+        {
+          "text": "Learn more",
+          "href": "https://policies.google.com/technologies/cookies?hl=en",
+          "visible": false
+        },
+        {
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "visible": false
+        },
+        {
+          "text": "apps_spark_2Tools",
+          "href": "/project/<id>/tools",
+          "visible": true
+        },
+        {
+          "text": "addCreate tool",
+          "href": "/project/<id>/create-tool",
+          "visible": true
+        },
+        {
+          "text": "deleteTrash",
+          "href": "/project/<id>/trash",
+          "visible": true
+        }
+      ],
+      "headings": [
+        {
+          "level": "H1",
+          "text": "Build all the tools you can imagine."
+        },
+        {
+          "level": "H2",
+          "text": "Image"
+        },
+        {
+          "level": "H2",
+          "text": "Video"
+        },
+        {
+          "level": "H2",
+          "text": "Prompting"
+        },
+        {
+          "level": "H2",
+          "text": "Experimental"
+        }
+      ],
+      "modelTexts": [
+        "3D Model Visualizer",
+        "Use a 3D model to guide your image generation"
+      ],
+      "ratioTexts": []
+    }
+  },
+  "gridArchitect": {
+    "urlPattern": "/project/<id>/tool",
+    "title": "Google Flow - MCP remap sandbox",
+    "discoveredAt": "2026-10-16T23:28:33.083Z",
+    "selectors": {
+      "buttons": [
+        {
+          "text": "Agree",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "No thanks",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "Google Account: Your Name  \n(first@example.com), Google membership",
+          "visible": true,
+          "tag": "A",
+          "ariaLabel": "Google Account: Your Name  \n(first@example.com), Google membership",
+          "dataTestId": null
+        },
+        {
+          "text": "arrow_back",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Back",
+          "dataTestId": null
+        },
+        {
+          "text": "Edit icon",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Edit icon",
+          "dataTestId": null
+        },
+        {
+          "text": "Tool",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "Edit",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "star Apply to be featured",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "favorite",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Favorite",
+          "dataTestId": null
+        },
+        {
+          "text": "share",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Share",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "Done",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "dashboard All media",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "image Images",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "accessibility_new Characters",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "movie Scenes",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "drive_folder_upload Uploads",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "keyboard_arrow_down",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Toggle tools",
+          "dataTestId": null
+        },
+        {
+          "text": "left_panel_closeCollapse",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "close",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Close",
+          "dataTestId": null
+        },
+        {
+          "text": "bug_report",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Debug Menu (Mock Error)",
+          "dataTestId": null
+        },
+        {
+          "text": "close",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Close assistant",
+          "dataTestId": null
+        },
+        {
+          "text": "arrow_forward",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Send message",
+          "dataTestId": null
+        }
+      ],
+      "inputs": [
+        {
+          "placeholder": "Untitled applet",
+          "ariaLabel": "Editable text",
+          "name": "",
+          "type": "text",
+          "visible": true
+        },
+        {
+          "placeholder": "What do you want to create?",
+          "ariaLabel": "Ask applet agent to make changes",
+          "name": "",
+          "type": "TEXTAREA",
+          "visible": true
+        },
+        {
+          "placeholder": "",
+          "ariaLabel": "",
+          "name": "g-recaptcha-response",
+          "type": "TEXTAREA",
+          "visible": false
+        }
+      ],
+      "links": [
+        {
+          "text": "Learn more",
+          "href": "https://policies.google.com/technologies/cookies?hl=en",
+          "visible": false
+        },
+        {
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "visible": false
+        },
+        {
+          "text": "apps_spark_2Tools keyboard_arrow_down",
+          "href": "/project/<id>/tools",
+          "visible": true
+        },
+        {
+          "text": "addCreate tool",
+          "href": "/project/<id>/create-tool",
+          "visible": true
+        },
+        {
+          "text": "deleteTrash",
+          "href": "/project/<id>/trash",
+          "visible": true
+        }
+      ],
+      "headings": [
+        {
+          "level": "H3",
+          "text": "Tool Builder"
+        }
+      ],
+      "modelTexts": [
+        "Nano Banana 2 requests in this app are automatically upgraded to 🍌 Nano Banana 2.1."
+      ],
+      "ratioTexts": [],
+      "toolFrame": {
+        "buttons": [
+          {
+            "text": "Start Architecting",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "New grid",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "Tutorial",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "EngineNano Banana 2",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "Format Ratio16:9",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "Visual LogicStyle from References",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "Unified ThemeMaster prompt drives the entire grid.",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "SequenceUnique prompt and camera logic per frame.",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "Prompt WizardAuto-storyboard from script.",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          },
+          {
+            "text": "Generate",
+            "visible": true,
+            "tag": "BUTTON",
+            "ariaLabel": null,
+            "dataTestId": null
+          }
+        ],
+        "inputs": [
+          {
+            "placeholder": "E.g. A 1970s sci-fi film aesthetic... muted colors, analog g",
+            "ariaLabel": "",
+            "name": "",
+            "type": "TEXTAREA",
+            "visible": true
+          }
+        ],
+        "headings": [
+          {
+            "level": "H2",
+            "text": "Grid Architect"
+          }
+        ]
+      }
+    }
+  },
+  "project": {
+    "urlPattern": "/project/<id>",
+    "title": "Google Flow - Nov 11 - 23:38",
+    "discoveredAt": "2026-11-12T05:39:47.635Z",
+    "selectors": {
+      "buttons": [
+        {
+          "text": "Agree",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "No thanks",
+          "visible": false,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "home",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Home",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options for the project",
+          "dataTestId": null
+        },
+        {
+          "text": "search",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Search",
+          "dataTestId": null
+        },
+        {
+          "text": "filter_list",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Filtering and sorting options",
+          "dataTestId": null
+        },
+        {
+          "text": "add",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Add media menu",
+          "dataTestId": null
+        },
+        {
+          "text": "help",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Product help",
+          "dataTestId": null
+        },
+        {
+          "text": "settings_2",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Settings",
+          "dataTestId": null
+        },
+        {
+          "text": "more_vert",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "More options",
+          "dataTestId": null
+        },
+        {
+          "text": "PRO",
+          "visible": true,
+          "tag": "DIV",
+          "ariaLabel": "Account details",
+          "dataTestId": null
+        },
+        {
+          "text": "Google Account: Acme  \n(second@example.com), Google membership",
+          "visible": true,
+          "tag": "A",
+          "ariaLabel": "Google Account: Acme  \n(second@example.com), Google membership",
+          "dataTestId": null
+        },
+        {
+          "text": "dashboard All media",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "accessibility_new Characters",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "movie Scenes",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "left_panel_openExpand",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "add",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Add ingredients to the prompt box",
+          "dataTestId": null
+        },
+        {
+          "text": "Agent",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": null,
+          "dataTestId": null
+        },
+        {
+          "text": "🍌 Nano Banana 2.1 crop_16_9 x2",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Settings trigger",
+          "dataTestId": null
+        },
+        {
+          "text": "arrow_forward",
+          "visible": true,
+          "tag": "BUTTON",
+          "ariaLabel": "Start generation",
+          "dataTestId": null
+        }
+      ],
+      "inputs": [
+        {
+          "placeholder": "",
+          "ariaLabel": "Editable text",
+          "name": "",
+          "type": "text",
+          "visible": true
+        },
+        {
+          "placeholder": "",
+          "ariaLabel": "Search",
+          "name": "",
+          "type": "text",
+          "visible": true
+        },
+        {
+          "placeholder": "",
+          "ariaLabel": "What do you want to create?",
+          "name": "",
+          "type": "DIV",
+          "visible": true
+        },
+        {
+          "placeholder": "",
+          "ariaLabel": "",
+          "name": "g-recaptcha-response",
+          "type": "TEXTAREA",
+          "visible": false
+        }
+      ],
+      "links": [
+        {
+          "text": "Learn more",
+          "href": "https://policies.google.com/technologies/cookies?hl=en",
+          "visible": false
+        },
+        {
+          "text": "Skip to main content",
+          "href": "#main-content",
+          "visible": false
+        },
+        {
+          "text": "folder Library",
+          "href": "/project/<id>",
+          "visible": true
+        },
+        {
+          "text": "apps_spark_2Tools",
+          "href": "/project/<id>/tools",
+          "visible": true
+        },
+        {
+          "text": "addCreate tool",
+          "href": "/project/<id>/create-tool",
+          "visible": true
+        },
+        {
+          "text": "deleteTrash",
+          "href": "/project/<id>/trash",
+          "visible": true
+        }
+      ],
+      "headings": [],
+      "modelTexts": [
+        "🍌 Nano Banana 2.1"
+      ],
+      "ratioTexts": []
+    }
+  },
+  "stable": {
+    "_note": "Mapped against the live UI on 2026-10-16. Source of truth in code: src/navigation/flow-ui.js. Flow is agent-first: prompts go to a chat agent that uses the Agent settings defaults.",
+    "routes": {
+      "home": "/?pli=1  (bare / sometimes serves the /about marketing page)",
+      "project": "/project/<uuid>",
+      "tools": "/project/<uuid>/tools",
+      "createTool": "/project/<uuid>/create-tool",
+      "trash": "/project/<uuid>/trash",
+      "newCharacter": "/project/<uuid>/character",
+      "character": "/project/<uuid>/character/<uuid>",
+      "scene": "/project/<uuid>/scene/<uuid>",
+      "media": "/project/<uuid>/edit/<uuid>",
+      "tool": "/project/<uuid>/tool/<uuid>?mode=APP"
+    },
+    "home": {
+      "newProject": "button:has-text('New project')  -> opens /project/<uuid> immediately",
+      "projectCard": "a[href^='/project/']",
+      "cardActions": [
+        "Edit project title",
+        "Delete project"
+      ]
+    },
+    "project": {
+      "promptBox": "[role=textbox][aria-label='What do you want to create?']",
+      "send": "button[aria-label='Start generation']",
+      "busy": "a visible button whose text is 'stop'",
+      "newSession": "button[aria-label='Start new session']",
+      "agentSettings": "button[aria-label='Settings']:has-text('tune')  (header 'settings_2' is view settings, not this)",
+      "agentSettingsPanel": {
+        "title": "h2 'Agent settings'",
+        "back": "button[aria-label='Back']  (Close would collapse the whole agent panel)",
+        "imageRadios": "ratio 16:9/4:3/1:1/3:4/9:16 + count x1-x4",
+        "videoRadios": "ratio 16:9/9:16 + count x1-x4",
+        "imageModel": "button[aria-label='Image generation default model']",
+        "videoModel": "button[aria-label='Video generation default model']",
+        "save": "button 'Save'",
+        "confirmBeforeGenerating": "input[type=radio] Always(1)/Never(2)"
+      },
+      "imageModels": [
+        "Nano Banana Pro",
+        "Nano Banana 2 Lite",
+        "Nano Banana 2.1"
+      ],
+      "videoModels": [
+        "Omni 1.2 Flash",
+        "Omni 1.1 Flash (Leaving Dec 5)",
+        "Veo 3.1 - Lite",
+        "Veo 3.1 - Fast (Leaving Dec 5)",
+        "Veo 3.1 - Quality (Leaving Dec 5)"
+      ],
+      "title": ".editable-text-container input  (commit with Enter)",
+      "agentReply": ".messages-list .agent-row .agent-message-content",
+      "resultThumbnails": ".messages-list img[alt^='Option']  (click -> /edit/<uuid>)",
+      "addMedia": "button[aria-label='Add media menu'] -> menuitems: Upload | New collection | Create character | New scene",
+      "ingredients": "button[aria-label='Add ingredients to the prompt box'] -> [role=option] assets; clicking one attaches it (chip: flow-ingredient-chip -> flow-image-ingredient-chip -> button.chip-container[aria-label='Ingredient'] -> img.chip-image[alt='Ingredient image']). 2026-11-10: the prompt box is now flow-creative-agent-prompt-box (ProseMirror), the old .agent-panel-prompt-box chip scope matched nothing.",
+      "grid": "flow-grid-tile-container[role=group][aria-label=<name>] > flow-(image|video|scene|...)-tile; newest first; pending tiles show NN%",
+      "sidebar": [
+        "All media",
+        "Images",
+        "Videos",
+        "Characters",
+        "Scenes",
+        "Tools",
+        "Create tool",
+        "Trash"
+      ],
+      "filters": "button[aria-label='Filtering and sorting options'] (Type, Aspect ratio, Created, Duration, Resolution, Sort by Newest/Oldest)"
+    },
+    "mediaViewer": {
+      "download": "button[aria-label='Download media'] -> menuitems '1K Original size' | '2K Upscaled' | '4K Upscaled'",
+      "trash": "button[aria-label='Move to trash']",
+      "settings": "button[aria-label='Settings trigger']  (shows 'Generating will use N credits')"
+    },
+    "character": {
+      "description": "[role=textbox][aria-label='Describe your character…']",
+      "model": "button[aria-label='Select model family']",
+      "send": "button[aria-label='Start generation']",
+      "upload": "button 'Upload' -> file chooser; INSTANTLY creates a character from the photo",
+      "after": {
+        "url": "/project/<uuid>/character/<uuid>",
+        "name": "input[aria-label='Character name']",
+        "personality": "textarea[aria-label='Character personality']",
+        "done": "button 'Done'"
+      }
+    },
+    "scene": {
+      "editor": [
+        "button[aria-label='Add clip']",
+        "[role=textbox][aria-label='Select a clip to edit']",
+        "button[aria-label='Toggle aspect ratio']",
+        "button[aria-label='Move to trash']"
+      ],
+      "note": "Scenes are timelines of video clips; the prompt box only works once a clip is selected."
+    },
+    "tools": {
+      "tabs": "button[role=radio] My Tools | Community | Templates (selection is remembered)",
+      "card": ".applet-card (.applet-name)",
+      "open": "clicking a Template/Community card COPIES it into the project ('Remix of <name>')",
+      "frame": "tool UI lives in a sandboxed blob iframe on *.scf.usercontent.goog; use frame locators"
+    },
+    "gridArchitect": {
+      "frame": "scf.usercontent.goog iframe",
+      "start": "button 'START ARCHITECTING' (overlay blocks clicks until pressed)",
+      "engine": "button 'ENGINE' -> Nano Banana 2 | Nano Banana Pro",
+      "ratio": "button 'FORMAT RATIO' -> 1:1 16:9 9:16 4:3 3:4",
+      "visualLogic": "button 'VISUAL LOGIC' -> Style from References | Ultra Realistic | Cinematic Movie | Film Noir | Anime / Manga | + Custom Style",
+      "modes": [
+        "UNIFIED THEME (textarea)",
+        "SEQUENCE (#1-#4: shot size select, angle select, textarea 'Shot details...')",
+        "PROMPT WIZARD (textarea 'Paste script...' + BREAKDOWN)"
+      ],
+      "generate": "button 'GENERATE' (never pressed by the MCP)"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "auto_confirm": true,
+  "campaign": "v075-shortcut-v3",
+  "model": "flash",
+  "ratio": "9:16",
+  "duration": 4,
+  "quantity": 1,
+  "output_folder": "/home/you/Documents/Acme/05_Ops/cards/file-review-V075-e62ef5c9d3e66181/work/clips",
+  "reference_images": [
+    "/home/you/Documents/Acme/05_Ops/cards/file-review-V075-e62ef5c9d3e66181/work/refs/flow_cf8bcdbe_2.jpg",
+    "/home/you/Documents/Acme/05_Ops/cards/file-review-V075-e62ef5c9d3e66181/work/refs/flow_cf8bcdbe_1.jpg"
+  ],
+  "prompt": "Medium two-shot at desk height in a cramped student room at 2 a.m., 35mm lens, very slow 5 percent push-in, in a single unbroken scene, lit by a warm desk lamp from the right and cold blue window light from the left. MAYA, 22, South Asian, dark curly hair in a messy bun, oversized heather-grey crewneck sweatshirt, sits at the desk over an open chemistry textbook with a pen in her hand, exhausted and stuck. NOAH, 23, Black, short fade, small hoop earring, black denim jacket over a plain white T-shirt, leans on the edge of the desk beside her holding a paper coffee cup, calm and amused. Maya taps the page twice with her pen, sighs and says: The reaction won't go. Noah raises his eyebrows, gestures at the page with his free hand and says: You're climbing the whole mountain. Natural, lively voices, close and intimate, no music. Audio: quiet room tone, pen tapping, faint traffic outside. Keep the two faces, wardrobe, room and lighting identical to the reference. A clean frame with no subtitles, captions or on-screen text. Leave clear space above their heads and keep both faces inside frame for the whole shot."
+}

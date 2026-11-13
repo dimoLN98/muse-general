@@ -1,0 +1,13 @@
+import pkg from 'playwright-core';
+const { chromium } = pkg;
+const b = await chromium.connectOverCDP('http://127.0.0.1:9334');
+const ctx = b.contexts()[0];
+const cookies = await ctx.cookies(['https://www.flowmusic.app','https://flowmusic.app','https://accounts.google.com']);
+console.log('flowmusic/google cookies:', cookies.length, cookies.map(c=>c.domain+':'+c.name).slice(0,30));
+const p = await ctx.newPage();
+await p.goto('https://www.flowmusic.app/settings', { waitUntil: 'domcontentloaded', timeout: 60000 });
+await p.waitForTimeout(4000);
+const body = await p.evaluate(() => (document.body.innerText||'').replace(/\s+/g,' ').slice(0,700));
+console.log('URL', p.url()); console.log('SETTINGS BODY:', body);
+await p.close();
+process.exit(0);
