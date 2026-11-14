@@ -100,25 +100,27 @@ async function main() {
   });
   notify('notifications/initialized');
 
-  // 1. tools/list — 39 tools (36 original + 3 new)
+  // 1. tools/list — 40 tools (36 original + 4 new)
   const list = await send('tools/list');
   const names = list.tools.map((t) => t.name);
-  check('tools/list returns 39 tools', names.length === 39, `got ${names.length}`);
+  check('tools/list returns 40 tools', names.length === 40, `got ${names.length}`);
   const ORIGINAL_36 = ['flow_connect', 'flow_disconnect', 'flow_status', 'flow_account_check', 'flow_accounts', 'flow_discover_ui', 'flow_generate_image', 'flow_generate_video', 'flow_video_options', 'flow_edit_video', 'flow_stitch_videos', 'flow_qc_report', 'flow_analyze_beats', 'flow_beat_sync', 'flow_motion_overlay', 'flow_music_generate', 'flow_music_download', 'flow_music_shorten', 'flow_music_songs', 'flow_music_trim', 'flow_music_stems', 'flow_save_frame', 'flow_download_latest', 'flow_create_character', 'flow_import_character', 'flow_open_characters', 'flow_create_scene', 'flow_add_to_scene', 'flow_open_tools_gallery', 'flow_use_grid_architect', 'flow_use_tool', 'flow_create_tool', 'flow_refine_tool', 'flow_inspect_tool', 'flow_screenshot', 'flow_queue_status'];
   check('all 36 original tools present', ORIGINAL_36.every((n) => names.includes(n)), `missing: ${ORIGINAL_36.filter((n) => !names.includes(n)).join(',')}`);
   check('flow_cloud_complete + flow_cloud_result present', names.includes('flow_cloud_complete') && names.includes('flow_cloud_result'));
   check('flow_generate_batch present', names.includes('flow_generate_batch'));
+  check('flow_switch_account present', names.includes('flow_switch_account'));
 
-  // 2. flow_accounts — single Muse account, balance = whatever is stored (see note above).
-  // On a fresh install there is no stored account state yet (accounts.json does
-  // not exist), so these two checks are skipped until the first flow_connect /
-  // balance read seeds it. (2026-11-13: a fresh tree must pass its smoke test.)
+  // 2. flow_accounts — 3 rotation accounts in order, musedraft active by default.
+  // On a fresh install there is no stored account state yet, so the balance
+  // check is skipped (balances are null until the first live read), but the
+  // 3-account shape comes from config and is always asserted.
   const accounts = toolText(await callTool('flow_accounts', {}));
-  if (accounts.accounts?.length) {
-    check('flow_accounts returns you@example.com only', accounts.active_email === 'you@example.com' && accounts.accounts?.length === 1, JSON.stringify(accounts.accounts?.map((a) => a.email)));
-    check('flow_accounts last_balance matches the stored balance', EXPECTED_BALANCE !== null && accounts.accounts?.[0]?.last_balance === EXPECTED_BALANCE, `got ${accounts.accounts?.[0]?.last_balance}, stored ${EXPECTED_BALANCE}`);
+  check('flow_accounts returns the 3 rotation accounts in order', accounts.accounts?.length === 3 && accounts.accounts.map((a) => a.email).join(',') === 'you@example.com,shohreh.hassani1968@gmail.com,drtalebikids@gmail.com', JSON.stringify(accounts.accounts?.map((a) => a.email)));
+  check('flow_accounts active account is musedraft (#1)', accounts.active_email === 'you@example.com' && accounts.active_index === 1, `got ${accounts.active_email} #${accounts.active_index}`);
+  if (EXPECTED_BALANCE !== null) {
+    check('flow_accounts last_balance matches the stored balance', accounts.accounts?.[0]?.last_balance === EXPECTED_BALANCE, `got ${accounts.accounts?.[0]?.last_balance}, stored ${EXPECTED_BALANCE}`);
   } else {
-    console.log('  SKIP flow_accounts state checks (no stored account state yet — run flow_connect / a balance read first)');
+    console.log('  SKIP flow_accounts balance check (no stored balance yet — run flow_connect / a balance read first)');
   }
 
   // 3. flow_video_options — cheat sheet, no browser
@@ -224,11 +226,53 @@ async function main() {
   check('verified assignment names the signed-in account', (after.assignment || '').includes('Signed in as you@example.com'));
   if (after.task_id) createdTaskIds.push(after.task_id);
 
-  // 13. Unknown task id errors
+  // 13. flow_switch_account — enqueue, verify assignment, complete, switch back.
+  // No browser involved here: the test simulates the agent's completion result.
+  const switchTo2 = toolText(await callTool('flow_switch_account', { account_index: 2 }));
+  check('flow_switch_account queues', switchTo2.status === 'queued', `got ${switchTo2.status}`);
+  check('switch task needs no approval (spends nothing)', switchTo2.needs_approval === false, `got ${switchTo2.needs_approval}`);
+  check('switch assignment names shohreh.hassani1968@gmail.com', (switchTo2.assignment || '').includes('shohreh.hassani1968@gmail.com'));
+  check('switch assignment uses the /u/1/ URL', (switchTo2.assignment || '').includes('flow.google.com/u/1/'));
+  check('switch assignment never signs anyone out', !(switchTo2.assignment || '').toLowerCase().includes('sign out'));
+  if (switchTo2.task_id) createdTaskIds.push(switchTo2.task_id);
+  // Completing it as verified makes #2 the active account and records its balance.
+  const switchDone = toolText(await callTool('flow_cloud_complete', {
+    task_id: switchTo2.task_id,
+    status: 'done',
+    result: { verified: true, account: 'shohreh.hassani1968@gmail.com', balance: 444, currentUrl: 'https://flow.google.com/u/1/?pli=1', projects_visible: [] },
+  }));
+  check('switch task completes', switchDone.status === 'recorded');
+  const accountsAfterSwitch = toolText(await callTool('flow_accounts', {}));
+  check('active account is now #2 shohreh', accountsAfterSwitch.active_index === 2 && accountsAfterSwitch.active_email === 'shohreh.hassani1968@gmail.com', `got #${accountsAfterSwitch.active_index} ${accountsAfterSwitch.active_email}`);
+  const connAfterSwitch = JSON.parse(fs.readFileSync(CONN_FILE, 'utf-8'));
+  check('connection record now verified as shohreh', connAfterSwitch.verified === true && connAfterSwitch.account === 'shohreh.hassani1968@gmail.com', JSON.stringify(connAfterSwitch));
+  // Cost check: a 40-credit generation is covered by #2 (444) but not #3 (50);
+  // a 500-credit one is covered only by #1 (637/1050), so the ring walks forward.
+  const costCheck = toolText(await callTool('flow_accounts', { cost_estimate: 40 }));
+  check('cost_check recommends the active account when it covers the cost', costCheck.cost_check?.recommended?.index === 2, JSON.stringify(costCheck.cost_check?.recommended));
+  const costCheckBig = toolText(await callTool('flow_accounts', { cost_estimate: 500 }));
+  check('cost_check recommends #1 when #2 cannot cover 500 credits', costCheckBig.cost_check?.recommended?.index === 1, JSON.stringify(costCheckBig.cost_check?.recommended));
+  // Switch back to #1 so the rest of the test (and the restored state) see musedraft again.
+  const switchBack = toolText(await callTool('flow_switch_account', { account_index: 1 }));
+  check('switch back to #1 queues', switchBack.status === 'queued');
+  if (switchBack.task_id) createdTaskIds.push(switchBack.task_id);
+  const backDone = toolText(await callTool('flow_cloud_complete', {
+    task_id: switchBack.task_id,
+    status: 'done',
+    result: { verified: true, account: 'you@example.com', balance: 637, currentUrl: 'https://flow.google.com/project/00000000-0000-0000-0000-000000000000', projects_visible: ['Acme Test'] },
+  }));
+  check('switch back to #1 completes', backDone.status === 'recorded');
+  const accountsAfterBack = toolText(await callTool('flow_accounts', {}));
+  check('active account is #1 musedraft again', accountsAfterBack.active_index === 1 && accountsAfterBack.active_email === 'you@example.com', `got #${accountsAfterBack.active_index} ${accountsAfterBack.active_email}`);
+  // An unknown account is refused before anything is queued.
+  const badSwitch = await callTool('flow_switch_account', { account_index: 9 });
+  check('unknown account index is refused', badSwitch.isError === true, badSwitch.content?.[0]?.text?.slice(0, 120));
+
+  // 14. Unknown task id errors
   const unknownTask = await callTool('flow_cloud_result', { task_id: 'cloud-0000000000000-dead' });
   check('unknown task id returns an error', unknownTask.isError === true);
 
-  // 14. flow_save_frame local half (only if a local mp4 exists)
+  // 15. flow_save_frame local half (only if a local mp4 exists)
   const outputsDir = path.join(ROOT, 'outputs');
   let mp4 = null;
   if (fs.existsSync(outputsDir)) {

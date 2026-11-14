@@ -1,29 +1,47 @@
-// Google Flow credit rotation across the user's three Google AI Pro accounts (rule set by the user, 27 Oct 2026).
+// Google Flow credit rotation across the user's three Google accounts (rule set by the user, 27 Oct 2026; clarified 13 Nov 2026).
+// STAY ON ONE ACCOUNT. Stay on the ACTIVE account while its balance covers the next generation.
+// * Do NOT switch accounts to harvest another account's daily 50 credits — the daily 50 on the other accounts simply expires unused while you stay put. Only switch when the active account cannot cover the next generation (its daily AND monthly credits are both spent).
+// * When it cannot, mark it exhausted and move FORWARD to the next account (1->2->3). Never switch back.
 //
-//   order: #1 first@example.com -> #2 second@example.com -> #3 third@example.com
+//   order: #1 you@example.com -> #2 shohreh.hassani1968@gmail.com -> #3 drtalebikids@gmail.com
 //
-// * Stay on the ACTIVE account while its balance covers the next generation.
-// * When it cannot, mark it exhausted and move FORWARD to the next account (1->2->3).
 // * There is NO monthly reset back to #1: every account refills on its own billing date, so the
 //   rotation only ever moves when the active account is empty.
 // * Extension (documented): when #3 is short too, keep walking the ring (3->1->2) and take the first
 //   account that shows credits again (one refilled on its billing date). When every account is short,
 //   stop with ALL_ACCOUNTS_EXHAUSTED; the caller alerts the operator.
 //
-// This file is pure logic + a small JSON state store. Browser work (relaunching Chrome on another
-// profile, reading the "<N> Google Flow credits" chip) is injected, so the whole policy is unit-tested
-// with fakes in test/account-rotation.test.js. Wiring to the real browser lives in ./runtime.js.
+// Cloud edition (2026-11-13): the three accounts all live in ONE cloud browser, signed in to the
+// same Google session (multi-account). Rotation switches accounts via Google's /u/N/ URL or the
+// account switcher — there are no separate Chrome profiles here (userDataDir is null for every
+// cloud account). Fallback order (verified live 2026-11-13):
+//   #1 you@example.com            (Your Name)            /u/3/  637 cr, resets Nov 29 04:47 AM
+//   #2 shohreh.hassani1968@gmail.com  (Shohreh Hassani)    /u/1/  444 cr, resets Dec 8 02:18 PM
+//   #3 drtalebikids@gmail.com         (Mohammadreza Talebi) /u/2/   50 cr, refreshes daily 8:28 PM
+// The /u/N/ indices come from the Google sign-in order in this browser session (shohreh u/1,
+// drtalebikids u/2, musedraft u/3). They are stable unless accounts are added/removed — treat
+// them as data to verify live, not permanent truth; the account switcher UI is the fallback, and
+// the indices are recorded in config/flow.config.json (accountRotation) so they can be corrected.
+// Each account has its OWN Flow projects and assets: "Acme Test" exists only on #1;
+// ingredients must be re-uploaded per account (out of scope for the rotation wiring — see
+// CLOUD-SETUP.md).
+//
+// This file is pure logic + a small JSON state store. Browser work (switching accounts in the cloud
+// browser, reading the "<N> Google Flow credits" chip) is injected, so the whole policy is
+// unit-tested with fakes in test/account-rotation.test.js. Wiring to the real browser lives in
+// ./cloud-accounts.js (state) and ../cloud/cloud-queue.js (switch assignment).
 import fs from 'node:fs';
 import path from 'node:path';
 import { FlowError, ErrorCodes } from '../utils/errors.js';
 
 export const PROFILES_ROOT = '/home/you/workspace/acme-video/google-flow-browser-mcp/browser-profiles'; // Muse / Muse local patch 2026-11-12
 export const DEFAULT_ACCOUNTS = Object.freeze([
-  // Muse / Muse local patch 2026-11-12: single account only, was the user's 3-account rotation.
-  { index: 1, email: 'you@example.com', userDataDir: `${PROFILES_ROOT}/google-flow-muse` },
+  { index: 1, email: 'you@example.com', name: 'Your Name', userDataDir: null, flowUrlIndex: 3, projectUrl: 'https://flow.google.com/project/00000000-0000-0000-0000-000000000000', balanceNote: '637 credits, resets Nov 29 at 4:47 AM (verified 2026-11-13)' },
+  { index: 2, email: 'shohreh.hassani1968@gmail.com', name: 'Shohreh Hassani', userDataDir: null, flowUrlIndex: 1, projectUrl: null, balanceNote: 'PRO, 444 credits, resets Dec 8 at 2:18 PM (verified 2026-11-13)' },
+  { index: 3, email: 'drtalebikids@gmail.com', name: 'Mohammadreza Talebi', userDataDir: null, flowUrlIndex: 2, projectUrl: null, balanceNote: '50 credits, refreshes daily at 8:28 PM (verified 2026-11-13)' },
 ]);
 export const DEFAULT_STATE_PATH = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..', 'state', 'accounts.json');
-export const RULE_TEXT = 'Single account: Your Name, you@example.com. Stay on this account; no rotation.';
+export const RULE_TEXT = 'Cloud 3-account rotation (order: you@example.com -> shohreh.hassani1968@gmail.com -> drtalebikids@gmail.com). STAY ON ONE ACCOUNT: stay on the active account while its balance covers the next generation; do NOT switch to harvest another account\'s daily 50 credits (those simply expire unused). Switch ONLY when the active account cannot cover the next generation (its daily AND monthly credits are both spent), then mark it exhausted and move FORWARD to the next account. Never switch back. No monthly reset back to #1 — each account refills on its own billing date. When every account is short, stop with ALL_ACCOUNTS_EXHAUSTED. Switching accounts changes which Flow projects are visible; "Acme Test" exists only on #1 and ingredients must be re-uploaded per account.';
 const HISTORY_LIMIT = 50;
 
 // ---- cost estimate ------------------------------------------------------------------------------------------
@@ -63,9 +81,13 @@ export function parseCreditsText(text) {
 
 function freshAccount(a) {
   return {
-    index: a.index, email: a.email, user_data_dir: a.userDataDir,
+    index: a.index, email: a.email, user_data_dir: a.userDataDir ?? null,
+    // Config-authoritative (from DEFAULT_ACCOUNTS / config accountRotation): never overwritten by stale state.
+    name: a.name ?? null, flow_url_index: a.flowUrlIndex ?? null, project_url: a.projectUrl ?? null,
+    balance_note: a.balanceNote ?? null,
+    // Dynamic, persisted from the last live read.
     last_balance: null, last_balance_at: null, exhausted: false, exhausted_at: null,
-    signed_in: null, signed_in_checked_at: null, last_served_at: null,
+    signed_in: null, signed_in_checked_at: null, last_served_at: null, cloud_verified: false,
   };
 }
 
@@ -76,7 +98,7 @@ export function normalizeState(raw, accounts = DEFAULT_ACCOUNTS) {
   const list = accounts.map((a) => {
     const prev = byIndex.get(a.index) || {};
     const base = freshAccount(a);
-    for (const key of Object.keys(base)) if (!['index', 'email', 'user_data_dir'].includes(key) && prev[key] !== undefined) base[key] = prev[key];
+    for (const key of Object.keys(base)) if (!['index', 'email', 'user_data_dir', 'name', 'flow_url_index', 'project_url', 'balance_note'].includes(key) && prev[key] !== undefined) base[key] = prev[key];
     return base;
   });
   const indexes = list.map((a) => a.index);
@@ -148,8 +170,8 @@ export function createStateStore(statePath = DEFAULT_STATE_PATH, { accounts = DE
 
 export function notSignedInError(acc) {
   return new FlowError(ErrorCodes.ACCOUNT_NOT_SIGNED_IN,
-    `account #${acc.index} (${acc.email}) not signed in: the user must run flow-accounts signin ${acc.index}`,
-    { account_index: acc.index, email: acc.email, signin_command: `flow-accounts signin ${acc.index}` });
+    `account #${acc.index} (${acc.email}) not signed in to the cloud browser: sign it in to Google in the cloud browser first. flow_switch_account can only switch between accounts that are already signed in`,
+    { account_index: acc.index, email: acc.email, fix: 'Sign the account in to Google in the cloud browser, then retry the switch.' });
 }
 
 export function balancesLine(state) {
@@ -216,7 +238,7 @@ export class AccountRotator {
     try {
       for (let step = 0; step < steps; step += 1, idx = nextIndexOf(order, idx)) {
         const acc = this.store.load().accounts.find((a) => a.index === idx);
-        const accountRef = { index: acc.index, email: acc.email, userDataDir: acc.user_data_dir };
+        const accountRef = { index: acc.index, email: acc.email, userDataDir: acc.user_data_dir, flowUrlIndex: acc.flow_url_index, name: acc.name };
         const activation = await this.activate(accountRef);
         current = idx;
         const signedAt = stamp();
@@ -260,7 +282,7 @@ export class AccountRotator {
   async #restore(startIdx, current) {
     if (current === null || current === startIdx) return;
     const acc = this.store.load().accounts.find((a) => a.index === startIdx);
-    try { await this.activate({ index: acc.index, email: acc.email, userDataDir: acc.user_data_dir }); } catch (e) {
+    try { await this.activate({ index: acc.index, email: acc.email, userDataDir: acc.user_data_dir, flowUrlIndex: acc.flow_url_index, name: acc.name }); } catch (e) {
       this.log('warn', 'Could not return the browser to the active account', { index: startIdx, error: e.message });
     }
   }

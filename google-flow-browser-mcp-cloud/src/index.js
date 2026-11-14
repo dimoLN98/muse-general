@@ -2,7 +2,8 @@
 // Google Flow Browser MCP — CLOUD edition.
 //
 // Same 36 tools as the original server (same names, same input schemas), plus
-// flow_cloud_complete and flow_cloud_result. The difference is the driver:
+// flow_generate_batch, flow_cloud_complete, flow_cloud_result and
+// flow_switch_account (3-account rotation, 2026-11-13). The difference is the driver:
 //
 //   Original: launches its OWN local Chrome via Playwright CDP (port 9334) and
 //   drives Flow in it. That Chrome cannot sign in to Google on this VM —
@@ -50,16 +51,21 @@ import { handleBeatSync, handleAnalyzeBeats } from './tools/beat-sync.js';
 import { handleMotionOverlay } from './tools/motion-overlay.js';
 import { handleMusicShorten } from './tools/flow-music.js';
 import { handleSaveFrame } from './tools/save-frame.js';
-import { accountsReport, recordBalance, markCloudVerified } from './accounts/cloud-accounts.js';
+import { accountsReport, recordBalance, markCloudVerified, setActiveByEmail, markAccountExhausted, activeAccount, configuredAccounts } from './accounts/cloud-accounts.js';
+import { isInsufficientCreditsText } from './accounts/rotation.js';
 import config, { get } from './utils/config.js';
 
 const DRIVER = 'cloud';
 const CLOUD_WINDOW = () => get('cloudBrowserWindow', 'browser-task:00000000-0000-0000-0000-000000000000');
 const EXPECTED_ACCOUNT = () => get('expectedAccount', 'you@example.com');
+// Rotation index for an email, or null when it is not a configured rotation account.
+const rotationIndexOf = (email) => (typeof email === 'string'
+  ? configuredAccounts().find((a) => a.email.toLowerCase() === email.toLowerCase())?.index ?? null
+  : null);
 
 // Browser tools: routed through the cloud task queue (nothing executes here).
 const QUEUED_TOOLS = new Set([
-  'flow_connect', 'flow_status', 'flow_account_check',
+  'flow_connect', 'flow_status', 'flow_account_check', 'flow_switch_account',
   'flow_discover_ui', 'flow_generate_image', 'flow_generate_video', 'flow_generate_batch', 'flow_edit_video',
   'flow_download_latest', 'flow_create_character', 'flow_import_character', 'flow_open_characters',
   'flow_create_scene', 'flow_add_to_scene', 'flow_open_tools_gallery',
@@ -72,6 +78,7 @@ function cloudContext() {
   return {
     driver: DRIVER,
     expectedAccount: EXPECTED_ACCOUNT(),
+    activeAccount: activeAccount()?.email || EXPECTED_ACCOUNT(),
     cloudBrowserWindow: CLOUD_WINDOW(),
     account: EXPECTED_ACCOUNT(),
   };
@@ -136,6 +143,7 @@ async function handleToolCall(name, args) {
 
     case 'flow_status':
     case 'flow_account_check':
+    case 'flow_switch_account':
     case 'flow_discover_ui':
     case 'flow_generate_image':
     case 'flow_generate_video':
@@ -170,7 +178,7 @@ async function handleToolCall(name, args) {
         const receipt = enqueueTool('flow_account_check', { balance_read: true });
         balanceTaskId = receipt.task_id;
       }
-      const result = await accountsReport({ refresh_active: refresh, balance_task_id: balanceTaskId });
+      const result = await accountsReport({ refresh_active: refresh, balance_task_id: balanceTaskId, cost: args?.cost_estimate ?? null });
       return textResult(result);
     }
 
@@ -250,20 +258,34 @@ async function handleToolCall(name, args) {
       const before = getCloudTask(taskId);
       if (!before) throw new FlowError(ErrorCodes.INVALID_PARAMS, `Unknown cloud task: ${taskId}`);
       const task = completeCloudTask(taskId, result, status, args?.error || null);
-      // Side effects: a verified connect/account-check records the identity;
-      // a balance read updates the last-read balance.
-      if (status === 'done' && (before.tool === 'flow_connect' || before.tool === 'flow_account_check')) {
+      // Side effects: a verified connect/account-check/switch records the identity
+      // (any configured rotation account) and makes it the active account; a
+      // balance read updates the last-read balance (on the account it was read for).
+      if (status === 'done' && (before.tool === 'flow_connect' || before.tool === 'flow_account_check' || before.tool === 'flow_switch_account')) {
         const verifiedAccount = typeof result.account === 'string' ? result.account : null;
         const verified = result.accountVerified === true || result.verified === true;
-        if (verified && verifiedAccount && verifiedAccount.toLowerCase() === EXPECTED_ACCOUNT().toLowerCase()) {
+        const balance = typeof result.balance === 'number' ? result.balance : (typeof result.credits === 'number' ? result.credits : null);
+        if (verified && verifiedAccount && rotationIndexOf(verifiedAccount) !== null) {
           writeCloudConnection({ verified: true, account: verifiedAccount, method: 'cloud-browser-verified' });
+          setActiveByEmail(verifiedAccount, {
+            balance,
+            reason: before.tool === 'flow_switch_account' ? 'verified switch in the cloud browser' : 'verified in the cloud browser',
+          });
           markCloudVerified(true, verifiedAccount);
         }
-        if (typeof result.balance === 'number') recordBalance(result.balance);
-        if (typeof result.credits === 'number') recordBalance(result.credits);
+        if (balance !== null) recordBalance(balance, rotationIndexOf(verifiedAccount));
       }
       if (status === 'done' && before.tool === 'flow_accounts_balance' && typeof result.balance === 'number') {
-        recordBalance(result.balance);
+        recordBalance(result.balance, rotationIndexOf(result.account));
+      }
+      // A generation that failed for lack of credits marks the ACTIVE account
+      // exhausted, so the next call can fall back to the next account (rotation
+      // policy). Other failures do not touch the rotation state.
+      if (status === 'failed' && ['flow_generate_video', 'flow_generate_batch', 'flow_edit_video'].includes(before.tool)) {
+        const text = [args?.error, result?.error, result?.message, result?.agent_reply].filter(Boolean).join(' ');
+        if (isInsufficientCreditsText(text)) {
+          try { markAccountExhausted(activeAccount()?.index ?? 1, 'Flow reported insufficient credits mid-request'); } catch { /* state unavailable */ }
+        }
       }
       return textResult({ status: 'recorded', task });
     }

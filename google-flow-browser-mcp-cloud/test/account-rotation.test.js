@@ -8,9 +8,12 @@ import {
   AccountRotator, createStateStore, DEFAULT_ACCOUNTS, estimateCost, parseCreditsText, isInsufficientCreditsText,
   reportsInsufficientCredits, normalizeState,
 } from '../src/accounts/rotation.js';
-import { signinCommand } from '../src/accounts/signin.js';
-import { clearStaleSingleton, costForTool } from '../src/accounts/runtime.js';
 import { projectBelongsToAccount } from '../src/navigation/project-navigator.js';
+// NOTE: the local-edition modules src/accounts/signin.js and
+// src/accounts/runtime.js do not exist in the cloud edition (no local Chrome
+// profiles, no google-chrome launcher). The signin-command and
+// stale-singleton tests from the old rotation suite were dropped with them;
+// the cloud switch path (flow_switch_account) is covered by the smoke test.
 
 const tmpState = () => path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'flow-accounts-test-')), 'state', 'accounts.json');
 
@@ -51,7 +54,7 @@ test('switches 1 -> 2 when #1 cannot cover the next generation, and records exha
   const w = world({ balances: { 1: 6, 2: 1000, 3: 1000 } });
   const got = await w.rotator.ensureCredits(7);
   assert.equal(got.account.index, 2);
-  assert.equal(got.account.email, 'second@example.com');
+  assert.equal(got.account.email, 'shohreh.hassani1968@gmail.com');
   assert.equal(got.switched_from, 1);
   assert.equal(w.browserOn(), 2);
   const s = w.store.load();
@@ -72,7 +75,7 @@ test('switches 2 -> 3', async () => {
   w.store.update((s) => { s.active_index = 2; s.accounts[0].exhausted = true; s.accounts[0].exhausted_at = '2026-10-20T00:00:00.000Z'; });
   const got = await w.rotator.ensureCredits(40);
   assert.equal(got.account.index, 3);
-  assert.equal(got.account.email, 'third@example.com');
+  assert.equal(got.account.email, 'drtalebikids@gmail.com');
   assert.deepEqual(w.activations, [2, 3]);
   const s = w.store.load();
   assert.equal(s.active_index, 3);
@@ -85,9 +88,9 @@ test('all three exhausted -> ALL_ACCOUNTS_EXHAUSTED listing every balance, brows
   w.store.update((s) => { s.active_index = 3; });
   await assert.rejects(() => w.rotator.ensureCredits(7), (error) => {
     assert.equal(error.code, 'ALL_ACCOUNTS_EXHAUSTED');
-    assert.match(error.message, /#1 you\.neoagent@gmail\.com: 3/);
-    assert.match(error.message, /#2 info\.acmedot@gmail\.com: 0/);
-    assert.match(error.message, /#3 you\.tfsa@gmail\.com: 5/);
+    assert.match(error.message, /#1 musedraft@gmail\.com: 3/);
+    assert.match(error.message, /#2 shohreh\.hassani1968@gmail\.com: 0/);
+    assert.match(error.message, /#3 drtalebikids@gmail\.com: 5/);
     assert.match(error.message, /Stop and alert the operator/);
     assert.deepEqual(error.details.balances.map((b) => b.balance), [3, 0, 5]);
     return true;
@@ -136,11 +139,11 @@ test('no reset on a new month: active #2 keeps serving on 1 November even though
   assert.equal(w.store.load().active_index, 2);
 });
 
-test('next account not signed in -> clear error naming the account and the signin command; active stays put', async () => {
+test('next account not signed in -> clear error naming the account; active stays put', async () => {
   const w = world({ balances: { 1: 2, 2: 1000, 3: 1000 }, signedIn: { 1: true, 2: false, 3: false } });
   await assert.rejects(() => w.rotator.ensureCredits(7), (error) => {
     assert.equal(error.code, 'ACCOUNT_NOT_SIGNED_IN');
-    assert.equal(error.message, 'account #2 (second@example.com) not signed in: the user must run flow-accounts signin 2');
+    assert.equal(error.message, 'account #2 (shohreh.hassani1968@gmail.com) not signed in to the cloud browser: sign it in to Google in the cloud browser first. flow_switch_account can only switch between accounts that are already signed in');
     return true;
   });
   const s = w.store.load();
@@ -201,18 +204,24 @@ test('unreadable balance does not trigger a switch (Flow refusing mid-request is
   assert.equal(got.balance, null);
 });
 
-test('state file: atomic writes, 0600, configured emails/profiles win, account #1 keeps its existing profile', () => {
+test('state file: atomic writes, 0600, configured emails win, cloud fields come from config', () => {
   const p = tmpState();
   const store = createStateStore(p);
-  store.update((s) => { s.accounts[1].last_balance = 42; s.accounts[1].email = 'tampered@example.com'; });
+  store.update((s) => { s.accounts[1].last_balance = 42; s.accounts[1].email = 'tampered@example.com'; s.accounts[1].flow_url_index = 99; });
   const dir = path.dirname(p);
   assert.deepEqual(fs.readdirSync(dir).filter((f) => f.endsWith('.tmp') || f.endsWith('.lock')), []);
   assert.equal(fs.statSync(p).mode & 0o777, 0o600);
   const s = store.load();
   assert.equal(s.accounts[1].last_balance, 42);
-  assert.equal(s.accounts[1].email, 'second@example.com');
+  assert.equal(s.accounts[1].email, 'shohreh.hassani1968@gmail.com');
+  assert.equal(s.accounts[1].flow_url_index, 1, 'config /u/N/ index wins over tampered state');
   assert.deepEqual(s.order, [1, 2, 3]);
-  assert.equal(DEFAULT_ACCOUNTS[0].userDataDir, '/home/you/.config/profiles/acme/browser-profiles/google-flow');
+  assert.equal(DEFAULT_ACCOUNTS[0].userDataDir, null, 'cloud accounts have no local Chrome profile');
+  assert.equal(DEFAULT_ACCOUNTS[0].flowUrlIndex, 3);
+  assert.equal(DEFAULT_ACCOUNTS[1].flowUrlIndex, 1);
+  assert.equal(DEFAULT_ACCOUNTS[2].flowUrlIndex, 2);
+  assert.equal(DEFAULT_ACCOUNTS[0].projectUrl, 'https://flow.google.com/project/00000000-0000-0000-0000-000000000000');
+  assert.equal(DEFAULT_ACCOUNTS[1].projectUrl, null, '#2 has no recorded Flow project yet');
   assert.equal(normalizeState({ active_index: 9 }).active_index, 1);
   assert.ok(!JSON.stringify(s).match(/password|cookie/i));
 });
@@ -232,13 +241,6 @@ test('cost estimates follow the published credit table', () => {
   assert.equal(estimateCost({ model: 'Veo 3.1 - Quality' }), 100);
   // Edits are billed like generations: Omni 1.2 at 3 credits/second, so 12 for a 4s clip.
   assert.equal(estimateCost({ kind: 'video_edit' }), 12);
-  assert.equal(costForTool('flow_generate_video', { prompt: 'x' }), null, 'staging (auto_confirm=false) spends nothing');
-  assert.equal(costForTool('flow_generate_video', { auto_confirm: true }), 12);
-  assert.equal(costForTool('flow_generate_video', { auto_confirm: true, model: 'fast' }), 20);
-  assert.equal(costForTool('flow_generate_video', { auto_confirm: true, duration: 9 }), 27);
-  assert.equal(costForTool('flow_generate_video', { auto_confirm: true, model: 'legacy', duration: 10 }), 15);
-  assert.equal(costForTool('flow_edit_video', { auto_confirm: true }), 12);
-  assert.equal(costForTool('flow_generate_image', { auto_confirm: true }), null);
 });
 
 test('credit text parsing and insufficient-credit detection', () => {
@@ -250,26 +252,8 @@ test('credit text parsing and insufficient-credit detection', () => {
   assert.equal(reportsInsufficientCredits({ status: 'success', agent_reply: 'not enough credits' }), false);
 });
 
-test('signin command is the port-less human-mode google-chrome launch', () => {
-  const cmd = signinCommand(DEFAULT_ACCOUNTS[1], ':21');
-  assert.equal(cmd.shell, `DISPLAY=:21 ${os.homedir()}/.local/bin/google-chrome --test-type --user-data-dir=/home/you/.config/profiles/acme/browser-profiles/google-flow-2 --no-first-run https://labs.google/fx/tools/flow`);
-  assert.ok(!cmd.argv.some((a) => /remote-debugging|password|@gmail/.test(a)));
-});
-
-test('stale Chrome singleton files are cleared only when their pid is dead on this host', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'flow-singleton-'));
-  fs.symlinkSync('hostA-123', path.join(dir, 'SingletonLock'));
-  fs.writeFileSync(path.join(dir, 'SingletonCookie'), '');
-  assert.equal(clearStaleSingleton(dir, { hostname: 'hostA', alive: () => true }), 'held:123');
-  assert.ok(fs.existsSync(path.join(dir, 'SingletonCookie')));
-  assert.equal(clearStaleSingleton(dir, { hostname: 'hostB', alive: () => false }), 'foreign');
-  assert.equal(clearStaleSingleton(dir, { hostname: 'hostA', alive: () => false }), 'cleared');
-  assert.ok(!fs.existsSync(path.join(dir, 'SingletonCookie')));
-  assert.equal(clearStaleSingleton(dir), 'none');
-});
-
 test('campaign projects are scoped to the account that owns them (legacy entries = account #1)', () => {
-  assert.equal(projectBelongsToAccount({ campaign: 'x' }, 'first@example.com'), true);
-  assert.equal(projectBelongsToAccount({ campaign: 'x' }, 'second@example.com'), false);
-  assert.equal(projectBelongsToAccount({ campaign: 'x', account: 'second@example.com' }, 'second@example.com'), true);
+  assert.equal(projectBelongsToAccount({ campaign: 'x' }, 'you@example.com'), true);
+  assert.equal(projectBelongsToAccount({ campaign: 'x' }, 'shohreh.hassani1968@gmail.com'), false);
+  assert.equal(projectBelongsToAccount({ campaign: 'x', account: 'shohreh.hassani1968@gmail.com' }, 'shohreh.hassani1968@gmail.com'), true);
 });

@@ -3,7 +3,8 @@
 // (same names, same input schemas) except for description wording that said
 // "launch Chrome / CDP / dedicated profile" — this edition has no local Chrome:
 // browser work runs in the signed-in cloud browser via the task queue.
-// Two new tools are appended: flow_cloud_complete and flow_cloud_result.
+// New tools appended in this edition: flow_generate_batch, flow_cloud_complete,
+// flow_cloud_result, and flow_switch_account (3-account rotation, 2026-11-13).
 
 export const TOOL_DEFINITIONS = [
   {
@@ -49,15 +50,25 @@ export const TOOL_DEFINITIONS = [
   },
   {
     "name": "flow_account_check",
-    "description": "Verify the signed-in Google account in the cloud browser matches you@example.com (agent-executed task queue). A verified result updates the local verified-account record.",
+    "description": "Verify the signed-in Google account in the cloud browser matches the active rotation account (agent-executed task queue). A verified result updates the local verified-account record. Pass balance_read=true to also read the active account's credit balance.",
     "inputSchema": {
       "type": "object",
-      "properties": {}
+      "properties": {
+        "balance_read": {
+          "type": "boolean",
+          "description": "Also read the active account's credit balance chip.",
+          "default": false
+        },
+        "account": {
+          "type": "string",
+          "description": "Email to verify instead of the active account (must be one of the configured rotation accounts)."
+        }
+      }
     }
   },
   {
     "name": "flow_accounts",
-    "description": "Google Flow account (single account: Your Name, you@example.com). Shows which account is active, last-read balance, exhausted flags/times and recent switches. Paid calls read the active balance first; no rotation. refresh_active=true queues a balance-read task in the cloud browser (no CDP) and returns the last-read balance with a note.",
+    "description": "Google Flow accounts (3-account rotation: #1 you@example.com, #2 shohreh.hassani1968@gmail.com, #3 drtalebikids@gmail.com). Shows which account is active, last-read balances, exhausted flags/times and recent switches. Paid calls read the active balance first; when it cannot cover the next generation the rotation moves FORWARD to the next account (no monthly reset back to #1). refresh_active=true queues a balance-read task in the cloud browser (no CDP) and returns the last-read balance with a note. cost_estimate=<credits> adds a cost check: which accounts can cover that many credits and which to switch to first.",
     "inputSchema": {
       "type": "object",
       "properties": {
@@ -65,6 +76,27 @@ export const TOOL_DEFINITIONS = [
           "type": "boolean",
           "description": "Read the active account's live \"<N> Google Flow credits\" (needs flow_connect).",
           "default": false
+        },
+        "cost_estimate": {
+          "type": "number",
+          "description": "Estimated credits for the next generation. Adds a cost_check: per-account can_cover and the recommended account to switch to first."
+        }
+      }
+    }
+  },
+  {
+    "name": "flow_switch_account",
+    "description": "Switch the active Google Flow account in the signed-in cloud browser to another rotation account (agent-executed task queue). The three accounts are all signed in to the same Google session, so this navigates to the target account's Flow (via its /u/N/ URL or the account switcher), verifies the account chip shows the target account, and reads its credit balance. It never signs anyone in or out. Switching changes which Flow projects are visible: each account has its own projects, and \"Acme Test\" exists only on #1 (you@example.com). A verified switch updates the local active-account record. Spends no credits and needs no approval.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "account_index": {
+          "type": "integer",
+          "description": "Rotation index to switch to: 1 = you@example.com, 2 = shohreh.hassani1968@gmail.com, 3 = drtalebikids@gmail.com."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email of the rotation account to switch to (alternative to account_index)."
         }
       }
     }
@@ -1237,7 +1269,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     "name": "flow_cloud_complete",
-    "description": "Record the agent's execution result for a queued cloud task (called by the agent after running the assignment in the signed-in cloud browser). If the task was flow_connect or flow_account_check and the result shows the account verified as you@example.com, updates state/cloud-connection.json. If the task was a balance read, updates state/accounts.json.",
+    "description": "Record the agent's execution result for a queued cloud task (called by the agent after running the assignment in the signed-in cloud browser). If the task was flow_connect, flow_account_check or flow_switch_account and the result shows an account verified as one of the configured rotation accounts, updates state/cloud-connection.json and makes that account the active one in state/accounts.json. If the task was a balance read, updates state/accounts.json. If a generation task failed because Flow reported insufficient credits, marks the active account exhausted so the next call can fall back to the next account.",
     "inputSchema": {
       "type": "object",
       "properties": {

@@ -3,7 +3,7 @@
 // Chrome page. This edition has no local Chrome, so identity is proven by the
 // agent in the cloud browser (flow_connect / flow_account_check tasks) and the
 // result is recorded here. Browser tools may still enqueue while unverified;
-// their assignments then start with "verify signed in as you@example.com first".
+// their assignments then start with "verify signed in as <active account> first".
 import fs from 'node:fs';
 import path from 'node:path';
 import { getFlowHome } from '../utils/config.js';

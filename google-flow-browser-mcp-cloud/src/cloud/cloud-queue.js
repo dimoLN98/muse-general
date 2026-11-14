@@ -19,6 +19,7 @@ import {
   DEFAULT_VIDEO_MODEL, DEFAULT_RESOLUTION,
 } from '../utils/video-models.js';
 import { buildMusicPrompt } from '../tools/flow-music.js';
+import { activeAccount, configuredAccounts } from '../accounts/cloud-accounts.js';
 
 const queueDir = () => path.join(getFlowHome(), 'state', 'cloud-queue');
 const taskPath = (id) => path.join(queueDir(), `${id}.json`);
@@ -225,6 +226,15 @@ export { buildMusicPrompt };
 const CLOUD_WINDOW = () => get('cloudBrowserWindow', 'browser-task:00000000-0000-0000-0000-000000000000');
 const DEFAULT_PROJECT = () => get('cloudProjectUrl', 'https://flow.google.com/project/00000000-0000-0000-0000-000000000000');
 const EXPECTED_ACCOUNT = () => get('expectedAccount', 'you@example.com');
+// The account the cloud browser is currently on (from state/accounts.json).
+// musedraft is the default; flow_switch_account moves it. Falls back to the
+// configured default if the state file is missing or unreadable.
+const ACTIVE_ACCOUNT = () => {
+  try { return activeAccount()?.email || EXPECTED_ACCOUNT(); } catch { return EXPECTED_ACCOUNT(); }
+};
+const ACTIVE_PROJECT = () => {
+  try { return activeAccount()?.project_url || null; } catch { return null; }
+};
 
 function header(ctx, label) {
   const lines = [
@@ -232,17 +242,42 @@ function header(ctx, label) {
     `Cloud browser window: ${CLOUD_WINDOW()} (already signed in; do NOT sign in again, do NOT open a local Chrome).`,
   ];
   if (!ctx.verified) {
-    lines.push(`STEP 0 — VERIFY FIRST: The MCP has no verified sign-in record for this session. Before doing anything else, check the account chip in the cloud browser shows ${EXPECTED_ACCOUNT()}. If it shows a different account, a sign-in page, or no account chip at all, STOP and report that (do not proceed).`);
+    lines.push(`STEP 0 — VERIFY FIRST: The MCP has no verified sign-in record for this session. Before doing anything else, check the account chip in the cloud browser shows ${ACTIVE_ACCOUNT()}. If it shows a different account, a sign-in page, or no account chip at all, STOP and report that (do not proceed).`);
   } else {
-    lines.push(`Signed in as ${ctx.account || EXPECTED_ACCOUNT()} (verified ${ctx.verified_at || 'previously'}).`);
+    lines.push(`Signed in as ${ctx.account || ACTIVE_ACCOUNT()} (verified ${ctx.verified_at || 'previously'}).`);
   }
   return lines.join('\n');
 }
 
 function projectLine(args = {}) {
-  if (args.project_name) return `Project: open the project named "${args.project_name}" (if it does not exist, click "New project" on the Flow home page and rename it to that name). Default project if unsure: ${DEFAULT_PROJECT()}`;
-  if (args.campaign) return `Project: reuse the project stored for campaign "${args.campaign}"; if none is open, use the default project ${DEFAULT_PROJECT()}.`;
-  return `Project: ${DEFAULT_PROJECT()} ("Acme Test"). If a different project is already open in the cloud browser, reuse that one instead.`;
+  const activeProject = ACTIVE_PROJECT();
+  const projectRef = activeProject || DEFAULT_PROJECT();
+  const projectNote = activeProject
+    ? `Project: ${projectRef} ("Acme Test"). If a different project is already open in the cloud browser, reuse that one instead.`
+    : `Project: the active account (${ACTIVE_ACCOUNT()}) has NO recorded Flow project yet — each Google account has its own projects, and "Acme Test" (${DEFAULT_PROJECT()}) exists only on you@example.com. Open Flow home (https://flow.google.com/) for this account and report which projects are visible; do NOT create a new project unless this task says so.`;
+  if (args.project_name) return `Project: open the project named "${args.project_name}" (if it does not exist, click "New project" on the Flow home page and rename it to that name). Default project if unsure: ${projectRef}`;
+  if (args.campaign) return `Project: reuse the project stored for campaign "${args.campaign}"; if none is open, use the default project ${projectRef}.`;
+  return projectNote;
+}
+
+/**
+ * INSUFFICIENT-CREDITS FALLBACK (rotation policy, the user 27 Oct 2026): if Flow
+ * reports the active account is out of credits, STOP on this account — do not
+ * retry here. Report the failure, and say which account to switch to next.
+ * `movable` is false when the generation is tied to this account's project
+ * (ingredients or a source media id that only exist here) — then it cannot be
+ * retried on another account without re-uploading them there first.
+ */
+function insufficientCreditsBlock(movable, tiedTo) {
+  const lines = [
+    'INSUFFICIENT CREDITS — FALLBACK: if Flow refuses this generation for lack of credits ("not enough credits", "run out of credits", "insufficient credits"), STOP on this account and do NOT retry here. Report the task as failed with the exact message Flow showed and the balance shown on the account chip.',
+  ];
+  if (movable) {
+    lines.push('A plain generation like this CAN be retried on the next account with credits: after reporting the failure, call flow_accounts with the estimated cost to see which account can cover it, then flow_switch_account to that account, then re-run this generation there.');
+  } else {
+    lines.push(`This generation is tied to THIS account's project — ${tiedTo} — so it cannot be retried on another account without re-uploading them there first. Say that in the report; do not switch accounts for this generation.`);
+  }
+  return lines.join('\n');
 }
 
 function reportBlock(fields) {
@@ -393,13 +428,14 @@ function downloadBlock(kindLabel) {
 // ---- per-tool assignments ------------------------------------------------------------------------
 
 function assignmentConnect(ctx) {
+  const account = ACTIVE_ACCOUNT();
   return [
     header(ctx, 'flow_connect — verify the cloud browser is on Flow and signed in'),
-    'TASK: verify the cloud browser is on Google Flow and signed in as you@example.com. This is verification only — nothing is generated and no credits are spent.',
+    `TASK: verify the cloud browser is on Google Flow and signed in as ${account}. This is verification only — nothing is generated and no credits are spent.`,
     'Steps:',
     '1. In the cloud browser window, open https://flow.google.com/?pli=1 (it may already be open on Flow).',
     '2. If the page shows the Flow marketing/about page instead of the app, open the default project instead: ' + DEFAULT_PROJECT() + ' — the app home shows a "New project" button.',
-    '3. Check the account chip (top-right avatar): it must show you@example.com. If a Google sign-in page appears, STOP and report login_required (do not attempt to sign in from here).',
+    `3. Check the account chip (top-right avatar): it must show ${account}. If a Google sign-in page appears, STOP and report login_required (do not attempt to sign in from here).`,
     '4. Read the credit balance chip if visible ("N Google Flow credits").',
     reportBlock(['browserConnected (true)', 'flowAccessible (true if the Flow app, not the marketing page, is showing)', 'accountVerified (true/false)', 'account (email shown on the chip, or null)', 'credits (number or null)', 'currentUrl', 'pageTitle', 'reason (if not verified)']),
     finishLine(),
@@ -417,17 +453,47 @@ function assignmentStatus(ctx) {
 }
 
 function assignmentAccountCheck(ctx, args) {
+  const account = args.account || ACTIVE_ACCOUNT();
   const lines = [
     header(ctx, 'flow_account_check — verify the signed-in Google account'),
-    'TASK: verify the signed-in Google account in the cloud browser is you@example.com.',
+    `TASK: verify the signed-in Google account in the cloud browser is ${account}.`,
     'Steps:',
-    `1. Open the project root ${DEFAULT_PROJECT()} — the project root always shows the account chip; tool/scene/media-viewer pages hide it.`,
+    `1. Open the project root ${ACTIVE_PROJECT() || DEFAULT_PROJECT()} — the project root always shows the account chip; tool/scene/media-viewer pages hide it.`,
     '2. Read the visible account email from the account chip (top-right avatar; the chip carries [data-account-email]).',
-    '3. Compare it with you@example.com. If it is a different account, report verified=false and do not proceed with anything else.',
+    `3. Compare it with ${account}. If it is a different account, report verified=false and do not proceed with anything else.`,
   ];
   if (args.balance_read) lines.push('4. Also read the credit balance chip ("N Google Flow credits") on the page and report the number.');
   lines.push(reportBlock(['verified (true/false)', 'account (email shown, or null)', 'method ("visible-account-ui")', 'reason (if not verified)', ...(args.balance_read ? ['balance (number or null)'] : [])]));
   lines.push(finishLine());
+  return lines.join('\n\n');
+}
+
+/**
+ * ACCOUNT SWITCH (3-account rotation, 2026-11-13). Switches the cloud
+ * browser to another Google account that is ALREADY signed in to the same
+ * Google session (multi-account). It never signs anyone in and never signs
+ * anyone out. After a switch the browser shows THAT account's Flow projects
+ * — the musedraft project "Acme Test" is not visible on #2/#3.
+ */
+function assignmentSwitchAccount(ctx, target) {
+  const current = ACTIVE_ACCOUNT();
+  const alreadyActive = target.index === activeAccount()?.index;
+  const lines = [
+    header(ctx, `flow_switch_account — switch the active Flow account to #${target.index} ${target.email}`),
+    `TASK: switch the cloud browser's Google Flow account from ${current} (account #${activeAccount()?.index}) to ${target.email} (account #${target.index}, ${target.name || 'no name recorded'}). This is a switch only — nothing is generated and no credits are spent.`,
+    'Why this exists: the three Flow accounts are all signed in to the same Google session in this cloud browser. Each account has its OWN Flow projects and credits; switching changes which projects are visible and which balance pays for the next generation.',
+    'Steps:',
+    `1. Open https://flow.google.com/u/${target.flowUrlIndex}/?pli=1 in the cloud browser window. Wait for Flow to load (up to ~25 s; a blank black page renders after a wait — wait it out).`,
+    `2. Check the account chip (top-right avatar): it must show ${target.email}. If it shows a different account, use the Google account switcher instead: click the account chip/avatar, pick "${target.email}" from the account list, wait for Flow to reload.`,
+    `3. If a Google sign-in page appears, or the account is not in the switcher list, STOP and report account_not_signed_in for ${target.email} (do NOT sign in from here, do NOT sign anyone out).`,
+    `4. Read the credit balance chip ("N Google Flow credits") from the Account panel: click the account chip, read span.credits-count, close the panel by clicking the backdrop corner.`,
+    '5. Note which projects are visible on Flow home for this account (do NOT create a new project in this task).',
+    reportBlock(['verified (true/false)', 'account (email shown on the chip, or null)', 'balance (number or null)', 'currentUrl', 'projects_visible (list of project names, or null)', 'reason (if not verified)']),
+    finishLine(),
+  ];
+  if (alreadyActive) {
+    lines.splice(3, 0, `NOTE: ${target.email} is ALREADY the active account — no switch is needed. Just verify the account chip shows it and read the balance (steps 2 and 4).`);
+  }
   return lines.join('\n\n');
 }
 
@@ -497,6 +563,7 @@ function assignmentGenerateVideo(ctx, args, v) {
   } else {
     blocks.push(spendBlock(spendEstimateFor('flow_generate_video', args)));
     blocks.push(directModeBlock({ model: v.model, ratio: v.ratio, duration: v.duration ?? 4, hasIngredients }));
+    blocks.push(insufficientCreditsBlock(!hasIngredients, 'the reference images exist only on THIS account\'s project'));
     blocks.push(`Paste the prompt into the prompt box ${PROMPT_BOX} (click it, select all, paste the full prompt text):\nPROMPT: ${v.prompt}`);
     blocks.push('Wait until the new video tiles are finished (no % text, no "Queued"). If Flow is still rendering after a few minutes, report still_rendering with the project URL instead of waiting forever.');
     blocks.push(downloadBlock('video'));
@@ -549,6 +616,7 @@ function assignmentGenerateBatch(ctx, args, clips) {
     `Batch: ${clips.length} clip(s), all DIRECT mode (Agent off), 720p. Total estimated cost: ~${total} credits. ${clips.map((c, i) => `${i + 1}. ${c.label}: ${c.model}, ${c.ratio}, ${c.duration ?? 4}s, ${costLabel(c.model, c.duration ?? 4, 1)}${c.reference_images.length ? `, ${c.reference_images.length} ingredient(s)` : ''}`).join(' | ')}`,
     clickPaceBlock(),
     spendBlock({ credits: total, note: `${clips.length} clips, ${clips.map((c) => `${c.label} ${c.model} ${c.duration ?? 4}s`).join(', ')}` }),
+    insufficientCreditsBlock(!clips.some((c) => c.reference_images.length > 0), 'some clips use reference images that exist only on THIS account\'s project'),
   ];
   clips.forEach((c, i) => {
     const hasIngredients = c.reference_images.length > 0;
@@ -589,6 +657,7 @@ function assignmentEditVideo(ctx, args) {
     blocks.push('STOP HERE. Do NOT click Start generation and do NOT send anything. Report ready_for_confirmation with the source media id/url and the edit prompt. Cost if run: about 12 credits (Omni 1.2 video-to-video, 4s at 720p, 3 per second).');
   } else {
     blocks.push(spendBlock(spendEstimateFor('flow_edit_video', args)));
+    blocks.push(insufficientCreditsBlock(false, 'the source clip exists only on THIS account\'s project'));
     blocks.push(`Click ${SEND_BUTTON}.`);
     blocks.push(permissionWaitBlock());
     blocks.push('Wait until the editor history gains a new step (flow-editor-history-step-video count increases) and no % progress remains.');
@@ -884,10 +953,11 @@ function assignmentMusicStems(ctx, args) {
 }
 
 function assignmentAccountsBalance(ctx) {
+  const account = ACTIVE_ACCOUNT();
   return [
     header(ctx, 'flow_accounts balance read — read the Flow credit balance'),
-    'TASK: read the current Google Flow credit balance for you@example.com. Read-only; nothing is spent.',
-    `Steps: open ${DEFAULT_PROJECT()} (or the Flow home page) and read the credit balance chip ("N Google Flow credits", in the account menu / header). If the chip is not visible, open the account menu and read it there.`,
+    `TASK: read the current Google Flow credit balance for ${account} (the active account). Read-only; nothing is spent.`,
+    `Steps: open ${ACTIVE_PROJECT() || DEFAULT_PROJECT()} (or the Flow home page) and read the credit balance chip ("N Google Flow credits", in the account menu / header). If the chip is not visible, open the account menu and read it there.`,
     reportBlock(['balance (number)', 'account', 'currentUrl']),
     finishLine(),
   ].join('\n\n');
@@ -917,6 +987,21 @@ export function prepareCloudTask(tool, args = {}, ctx = {}) {
     case 'flow_accounts_balance':
       assignment = assignmentAccountsBalance(identity);
       break;
+    case 'flow_switch_account': {
+      const accounts = configuredAccounts();
+      const idx = args.account_index !== undefined && args.account_index !== null ? Number(args.account_index) : null;
+      const email = typeof args.email === 'string' ? args.email.trim().toLowerCase() : null;
+      const target = idx !== null
+        ? accounts.find((a) => a.index === idx)
+        : accounts.find((a) => a.email.toLowerCase() === email);
+      if (!target) {
+        const known = accounts.map((a) => `#${a.index} ${a.email}`).join(', ');
+        throw new FlowError(ErrorCodes.INVALID_PARAMS, `Unknown Flow account (pass account_index 1-3 or email). Configured accounts: ${known}.`);
+      }
+      normalised = { ...args, account_index: target.index, email: target.email };
+      assignment = assignmentSwitchAccount(identity, target);
+      break;
+    }
     case 'flow_discover_ui': {
       const page = String(args.page || 'main').toLowerCase();
       const known = ['main', 'home', 'project', 'image', 'image-generation', 'video', 'video-generation', 'characters', 'character', 'scenes', 'tools-gallery', 'tools', 'grid-architect', 'grid'];

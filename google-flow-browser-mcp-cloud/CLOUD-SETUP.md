@@ -60,19 +60,20 @@ agent ──▶ MCP (this server, stdio) ──▶ state/cloud-queue/<taskId>.js
   errors), and the permission-card rule.
 - **Identity.** There is no live page to read, so identity is the last
   verified record in `state/cloud-connection.json`, written by
-  `flow_cloud_complete` after a connect / account-check task. Browser tools
-  may still **enqueue** while unverified, but their assignment starts with
-  "STEP 0 — VERIFY FIRST: check the account chip shows
-  you@example.com". If the recorded account is a *different* account
-  than expected, the gate throws `WRONG_GOOGLE_ACCOUNT`.
+  `flow_cloud_complete` after a connect / account-check / switch task.
+  Browser tools may still **enqueue** while unverified, but their
+  assignment starts with "STEP 0 — VERIFY FIRST: check the account chip
+  shows <active account>". If the recorded account is not one of the
+  configured rotation accounts, the gate throws `WRONG_GOOGLE_ACCOUNT`.
+  (3-account rotation, v1.4.0 — see the changelog below.)
 
-## Tools — 39 total (36 original + 3 new; v1.1.0 added flow_generate_batch)
+## Tools — 40 total (36 original + 4 new; v1.1.0 added flow_generate_batch, v1.4.0 added flow_switch_account)
 
 Same 36 tool names and input schemas as the original server. They fall into
 three groups:
 
 **Queued (browser work, executed by the agent in the cloud browser):**
-`flow_connect`, `flow_status`, `flow_account_check`, `flow_discover_ui`,
+`flow_connect`, `flow_status`, `flow_account_check`, `flow_switch_account`, `flow_discover_ui`,
 `flow_generate_image`, `flow_generate_video`, `flow_edit_video`,
 `flow_download_latest`, `flow_create_character`, `flow_import_character`,
 `flow_open_characters`, `flow_create_scene`, `flow_add_to_scene`,
@@ -100,15 +101,25 @@ spend_estimate_credits, assignment, how_to_execute}`.
 `flow_motion_overlay`, `flow_music_shorten`.
 `flow_accounts` with `refresh_active: true` does **not** use CDP — it
 enqueues a balance-read task (`flow_account_check` with `balance_read`) and
-returns the last-read balance with a note.
+returns the last-read balance with a note. `flow_accounts` also accepts
+`cost_estimate: <credits>` — it adds a `cost_check` showing which accounts
+can cover that many credits and which one to switch to first.
 
 **New (cloud plumbing):**
 - `flow_cloud_complete {task_id, result, status: 'done'|'failed', error?}` —
-  records the agent's execution result. Completing a connect/account-check
-  task with `accountVerified: true` + the expected account writes
-  `state/cloud-connection.json`; a reported `balance`/`credits` updates
-  `state/accounts.json`.
+  records the agent's execution result. Completing a connect/account-check/
+  switch task with a verified result for one of the configured rotation
+  accounts writes `state/cloud-connection.json` and makes that account the
+  active one in `state/accounts.json`; a reported `balance`/`credits`
+  updates the last-read balance. A generation task that failed because Flow
+  reported insufficient credits marks the active account exhausted.
 - `flow_cloud_result {task_id}` — returns the stored task + result.
+- `flow_switch_account {account_index | email}` — switches the active Flow
+  account in the signed-in cloud browser (3-account rotation, v1.4.0).
+  Queues an assignment that navigates to the target account's Flow (via its
+  /u/N/ URL or the account switcher), verifies the account chip, and reads
+  its credit balance. Never signs anyone in or out, spends no credits, needs
+  no approval. See the v1.4.0 changelog entry below.
 
 `flow_queue_status` returns both the original job queue and the cloud task
 queue.
@@ -285,3 +296,20 @@ All four changes came from the user watching the cloud browser live (2026-11-13 
 - **After a generation, STOP — do NOT switch the mode back to Video.** The `downloadBlock` now says "After the download, STOP. Do NOT change the mode back to Video, do NOT restore any settings" — switching back is wasted work; it only makes sense if the SAME task's next step is a video, and then the next step sets its own mode anyway. The dead `restoreSettingsBlock` function was removed.
 - **2K Upscaled downloads for images (not 1K Original).** Verified 2026-11-13 on all 8 Flow covers, 1K vs 2K, one by one: the print is identical in every one (no garbled text, no moved lines, no hallucinated or lost details) and the 2K version downscaled to 1080x1920 is consistently a touch sharper than the 1K version upscaled. `downloadBlock` and `directImageModeBlock` step 6 now say "2K Upscaled". Full report: `../research/1k-vs-2k-verdict.md`.
 - Smoke test 40 passed, 0 failed.
+
+## 2026-11-13 v1.4.0 — 3-account rotation (fallback when credits run out)
+
+The cloud browser has ONE Google session with THREE accounts signed in (multi-account). The MCP was single-account only (musedraft); when its credits ran out, generation stopped. Now it falls back to the next account with credits (policy set by the user 27 Oct 2026, reused from `src/accounts/rotation.js`).
+
+- **The three accounts (verified live 2026-11-13, fallback order 1->2->3):**
+  - #1 `you@example.com` (Your Name) — 637 credits, resets Nov 29 at 4:47 AM, Flow URL `/u/3/`. Default active account. Owns the "Acme Test" project.
+  - #2 `shohreh.hassani1968@gmail.com` (Shohreh Hassani, PRO) — 444 credits, resets Dec 8 at 2:18 PM, Flow URL `/u/1/`.
+  - #3 `drtalebikids@gmail.com` (Mohammadreza Talebi) — 50 credits, refreshes daily at 8:28 PM, Flow URL `/u/2/`.
+  - The `/u/N/` indices come from the Google sign-in order in this browser session (shohreh u/1, drtalebikids u/2, musedraft u/3). They are stable unless accounts are added/removed — treat them as data to verify live, not permanent truth; the account switcher UI is the fallback. They are recorded in `config/flow.config.json` (`accountRotation`) and in `src/accounts/rotation.js` (`DEFAULT_ACCOUNTS`) so they can be corrected.
+- **New tool `flow_switch_account` (40 tools total).** `flow_switch_account {account_index: 1-3 | email}` queues an assignment that navigates the cloud browser to the target account's Flow (via its `/u/N/` URL, or the account switcher if that lands on the wrong account), verifies the account chip shows the target account, and reads its credit balance. It never signs anyone in or out, spends no credits, needs no approval. A verified completion updates `state/cloud-connection.json` and makes that account the active one in `state/accounts.json`. The identity gate now accepts any of the three configured accounts (it used to accept only the expected account).
+- **How to trigger a switch.** Call `flow_switch_account` with the account index or email, run its assignment in the cloud browser, then `flow_cloud_complete` with the verified result. To pick the right account first, call `flow_accounts` with `cost_estimate: <credits>` — its `cost_check` shows per-account `can_cover` and the recommended account (ring order starting at the active account). Or read the balances directly: `flow_accounts` shows all three last-read balances.
+- **Fallback on generation (honest scope).** The rotation policy itself (`ensureCredits` / `runPaid` in `src/accounts/rotation.js`) is unit-tested and works in-process, but the cloud edition has no live browser — it cannot switch accounts by itself mid-generation. So automatic retry on the next account is NOT wired into the generation tools. What IS wired in: (1) every video/batch/edit assignment now carries an INSUFFICIENT CREDITS block — if Flow refuses for lack of credits, the agent stops on that account and reports the exact message and balance, plus which account to switch to; (2) `flow_cloud_complete` on a failed generation whose error/result text reports insufficient credits marks the active account exhausted in state, so the next call's `cost_check` routes around it. A plain generation (no reference images) can then be re-run on the next account; a generation WITH ingredients cannot move accounts (see the limitation below) — the assignment says so.
+- **Per-account limitation (important).** Each Google account has its OWN Flow projects and assets. "Acme Test" and its uploaded ingredients (mockups, logos) exist only on #1 (musedraft). After switching to #2 or #3, that project is NOT visible — the account has its own projects, and ingredients must be re-uploaded there before any ingredient-based generation can run on it. The switch assignment reports which projects are visible on the target account and never creates a project. Per-account ingredient setup is separate work, not done here.
+- **Config + state.** `config/flow.config.json` gains `accountRotation` (the 3 accounts: order, email, name, `/u/N/` index, project URL, last verified balance + reset/refresh note, exhausted flag). `state/accounts.json` now tracks all three accounts (`last_balance`, `last_balance_at`, `exhausted`, `cloud_verified`, `flow_url_index`, `project_url`, `balance_note`) and is seeded with the live-verified balances (637 / 444 / 50, verified 2026-11-13). `musedraft` stays `expectedAccount` and the default active account; nothing about the existing single-account flow changes when no switch happens.
+- **Tests.** Rotation unit tests fixed and green (15/15, `test/account-rotation.test.js` — it previously failed at import: it referenced the local-edition `signin.js` / `runtime.js`, which do not exist in the cloud edition; those tests were dropped and the account emails updated). `test/mcp-smoke.test.js` updated to the new account list and to the cloud `flow_status` receipt. Smoke test 56 passed, 0 failed (`npm test`). Full unit suite (`node --test test/*.test.js`): 30 pass / 46 fail — the 46 failures are pre-existing stale local-edition tests (they import `src/browser/*` modules that do not exist in the cloud edition); verified against the pre-change tree (12 pass / 49 fail), no regressions.
+- **Still to verify live (parent agent).** Account switch in the cloud browser (switch to #2, confirm the chip shows Shohreh Hassani and the balance reads ~444) and one cheap test clip on account #2 (Omni 1.1, 4 s, 7 credits, no ingredients — a plain generation, so it can move accounts). After that, set up #2's Flow project + re-upload the Acme ingredients there if #2 is to serve ingredient-based generations.
