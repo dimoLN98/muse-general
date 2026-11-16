@@ -1,7 +1,7 @@
 ---
 name: flow-self-improvement
 description: Improve how you work with Google Flow after every session — prompt writing, model choice, results, feedback, and above all click efficiency. Speed comes from fewer clicks, not faster typing. Run it AFTER a Flow session is finished and the results are sent to the user, then update the Flow skills with what you learned so the next session is better.
-version: 1.4.1
+version: 1.4.2
 author: Muse
 license: MIT
 metadata:
@@ -113,13 +113,16 @@ Agent, video or images. (Implemented in the cloud MCP:
 downloaded. The old way — one task per clip — paid a project-open, a settings
 round and a report for every clip. One round-trip instead of four.
 
-### 3. "Reuse prompt" on a failed tile (1 click, not 5)
+### 3. "Reuse prompt" on a failed tile (1 click, not 5) — EXCEPT on a velocity flag
 A failed tile keeps its prompt AND its ingredients. Click "Reuse prompt" and
 it retries with everything attached. The alternative — re-typing the prompt
 and re-attaching every ingredient — is 5+ clicks and a re-type. Never rebuild
-a failed generation by hand. (A prompt that failed for "unusual activity" is
-not a bad prompt. Do not rewrite it — retry it later via "Reuse prompt", or
-switch model to Pro.)
+a failed generation by hand. **EXCEPTION (2026-11-16): a tile that failed for
+"unusual activity" must NOT be retried via "Reuse prompt" — it fails
+instantly again. Reload the page and run a FRESH generation instead (see
+rule 24).** A prompt that failed for "unusual activity" is not a bad prompt.
+Do not rewrite it — retry it later via a fresh generation, or switch model
+to Pro.
 
 ### 4. Ingredients come from the asset list, not a re-upload
 Mockups already uploaded to the project stay in the asset list. Pick them by
@@ -265,6 +268,9 @@ I have — the browser planner has its own step latency (observe, decide, act)
 that I do not directly control, so the instruction sets the pace, it does not
 guarantee it.
 
+### 24. On an "unusual activity" refusal, run a FRESH generation — never retry the failed tile
+A failed tile keeps its prompt AND its ingredients, so "Reuse prompt" looks like the 1-click fix — but on a velocity flag it fails instantly again (Mixer v2 scene 1, 2026-11-16: 2x "Retry" failed). The flag sits on the tile/session, not the prompt. The fix that works: reload the project page, then run a FRESH generation (paste the whole prompt, wait 4 s, attach the reference). It started immediately (3% progress) and finished in ~60 s. No 10-15 min wait needed when the fresh generation works. (Updated 2026-11-16; the old "retry ONCE via Reuse prompt" instruction is dead — if any doc still says it, fix it.)
+
 ## Prompt-writing lessons (seeded)
 
 - Google's formula: `[Cinematography] + [Subject] + [Action] + [Context] +
@@ -286,7 +292,9 @@ guarantee it.
   "no text, no words, no letters, no logos anywhere except the prints
   already on the products".
 - A prompt that failed for "unusual activity" is not a bad prompt. Do not
-  rewrite it — retry it later via "Reuse prompt", or switch model (Pro).
+  rewrite it — reload the page and run a FRESH generation with the same
+  prompt (never retry the failed tile via "Reuse prompt" — it fails
+  instantly again; Mixer v2, 2026-11-16), or switch model (Pro).
 
 ## Results and feedback lessons (seeded)
 

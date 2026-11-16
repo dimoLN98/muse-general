@@ -73,8 +73,15 @@ burst traffic: too many generations fired too fast, with machine-like timing.
   clicking Start generation, leave a 10 s pause between generations (the user,
   2026-11-13: 10 s between each generation and the next — corrected from 20 s), never re-submit the
   same prompt inside ~40 s (spread 3 attempts over ~3 min), and on a refusal:
-  STOP the batch, real page reload, wait 10-15 min, retry ONCE via "Reuse
-  prompt" — never keep retrying.
+  STOP the batch, real page reload, then run a FRESH generation (paste the
+  whole prompt, 4 s wait, attach the reference) — do NOT retry the failed
+  tile, it fails instantly again (Mixer v2 scene 1, 2026-11-16: 2x "Retry"
+  failed, a fresh generation after reload started immediately at 3% and
+  finished in ~60 s). The flag sits on the tile/session, not the prompt.
+  The 10-15 min wait is no longer needed when the fresh generation works.
+- **UPDATE (2026-11-16, Mixer v2):** the fresh-generation-after-reload fix is
+  proven. "Reuse prompt" on a flagged tile is DEAD — remove it from any
+  instruction that still says it.
 - **Model-switch pressure valve:** if Nano Banana 2.1 is flagged, Nano Banana Pro
   is a separate daily pool (100/day on Plus/Pro) and may still work — try it once
   before waiting out the flag. (2 Lite shares 2.1's 400/day pool, so it is not
